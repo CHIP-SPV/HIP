@@ -75,7 +75,7 @@ typedef struct {
 
 
 //---
-// Common headers for both NVCC and HCC paths:
+// Common headers for SPIRV, NVCC and HCC paths:
 
 /**
  * hipDeviceProp
@@ -460,14 +460,72 @@ enum hipComputeMode {
  *     @}
  */
 
-#if (defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#if (defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                            \
+    !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)) &&                       \
+    !(defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__))
+#define _USE_HIPCOMMON_RUNTIME_API_
+
+#elif (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)) &&                      \
+    !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                           \
+    !(defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__))
+#include "hip/nvidia_detail/nvidia_hip_runtime_api.h"
+
+#elif (defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__)) &&                      \
+    !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                           \
+    !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#define _USE_HIPCOMMON_RUNTIME_API_
+#include "hip/hip_to_chip.hh"
+
+#else
+#error("Must define exactly one of __HIP_PLATFORM_AMD__, __HIP_PLATFORM_NVIDIA__ or __HIP_PLATFORM_SPIRV__");
+#endif
+
+#ifdef _USE_HIPCOMMON_RUNTIME_API_
 
 #include <stdint.h>
 #include <stddef.h>
 #ifndef GENERIC_GRID_LAUNCH
 #define GENERIC_GRID_LAUNCH 1
 #endif
-#include <hip/amd_detail/host_defines.h>
+//#include <hip/amd_detail/host_defines.h>
+/****/
+// Add guard to Generic Grid Launch method
+#ifndef GENERIC_GRID_LAUNCH
+#define GENERIC_GRID_LAUNCH 1
+#endif
+
+#if defined(__clang__) && defined(__HIP__)
+
+#if !__CLANG_HIP_RUNTIME_WRAPPER_INCLUDED__
+#define __host__ __attribute__((host))
+#define __device__ __attribute__((device))
+#define __global__ __attribute__((global))
+#define __shared__ __attribute__((shared))
+#define __constant__ __attribute__((constant))
+#endif // !__CLANG_HIP_RUNTIME_WRAPPER_INCLUDED__
+
+#define __noinline__ __attribute__((noinline))
+#define __forceinline__ inline __attribute__((always_inline))
+
+#else
+
+// Non-HCC compiler
+/**
+ * Function and kernel markers
+ */
+#define __host__
+#define __device__
+
+#define __global__
+
+#define __noinline__
+#define __forceinline__ inline
+
+#define __shared__
+#define __constant__
+
+#endif
+/********/
 #include <hip/driver_types.h>
 #include <hip/texture_types.h>
 #include <hip/surface_types.h>
@@ -500,16 +558,13 @@ extern "C" {
 #endif
 //---
 // API-visible structures
-typedef struct ihipCtx_t* hipCtx_t;
 // Note many APIs also use integer deviceIds as an alternative to the device pointer:
-typedef int hipDevice_t;
 typedef enum hipDeviceP2PAttr {
   hipDevP2PAttrPerformanceRank = 0,
   hipDevP2PAttrAccessSupported,
   hipDevP2PAttrNativeAtomicSupported,
   hipDevP2PAttrHipArrayAccessSupported
 } hipDeviceP2PAttr;
-typedef struct ihipStream_t* hipStream_t;
 #define hipIpcMemLazyEnablePeerAccess 0
 #define HIP_IPC_HANDLE_SIZE 64
 typedef struct hipIpcMemHandle_st {
@@ -518,8 +573,7 @@ typedef struct hipIpcMemHandle_st {
 typedef struct hipIpcEventHandle_st {
     char reserved[HIP_IPC_HANDLE_SIZE];
 } hipIpcEventHandle_t;
-typedef struct ihipModule_t* hipModule_t;
-typedef struct ihipModuleSymbol_t* hipFunction_t;
+
 typedef struct hipFuncAttributes {
     int binaryVersion;
     int cacheModeCA;
@@ -532,11 +586,20 @@ typedef struct hipFuncAttributes {
     int ptxVersion;
     size_t sharedSizeBytes;
 } hipFuncAttributes;
-typedef struct ihipEvent_t* hipEvent_t;
 enum hipLimit_t {
     hipLimitPrintfFifoSize = 0x01,
     hipLimitMallocHeapSize = 0x02,
 };
+
+#ifndef __HIP_PLATFORM_SPIRV__
+typedef struct ihipEvent_t* hipEvent_t;
+typedef int hipDevice_t;
+typedef struct ihipCtx_t* hipCtx_t;
+typedef struct ihipStream_t* hipStream_t;
+typedef struct ihipModule_t* hipModule_t;
+typedef struct ihipModuleSymbol_t* hipFunction_t;
+#endif
+
 /**
  * @addtogroup GlobalDefs More
  * @{
@@ -5370,12 +5433,8 @@ hipError_t hipGraphicsUnregisterResource(hipGraphicsResource_t resource);
  *   @}
  */
 
-#elif !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
-#include "hip/nvidia_detail/nvidia_hip_runtime_api.h"
-#else
-#error("Must define exactly one of __HIP_PLATFORM_AMD__ or __HIP_PLATFORM_NVIDIA__");
-#endif
 
+#endif //_USE_HIPCOMMON_RUNTIME_API_ 
 
 /**
  * @brief: C++ wrapper for hipMalloc

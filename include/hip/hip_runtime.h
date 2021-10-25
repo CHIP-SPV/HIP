@@ -37,7 +37,8 @@ THE SOFTWARE.
 #ifndef HIP_INCLUDE_HIP_HIP_RUNTIME_H
 #define HIP_INCLUDE_HIP_HIP_RUNTIME_H
 
-#if (__gfx1010__ || __gfx1011__ || __gfx1012__ || __gfx1030__ || __gfx1031__) && __AMDGCN_WAVEFRONT_SIZE == 64
+#if (__gfx1010__ || __gfx1011__ || __gfx1012__ || __gfx1030__ || __gfx1031__) &&                   \
+    __AMDGCN_WAVEFRONT_SIZE == 64
 #error HIP is not supported on GFX10 with wavefront size 64
 #endif
 
@@ -53,22 +54,32 @@ THE SOFTWARE.
 #if __cplusplus > 199711L
 #include <thread>
 #endif
-#endif // !defined(__HIPCC_RTC__)
+#endif  // !defined(__HIPCC_RTC__)
 
 #include <hip/hip_version.h>
 #include <hip/hip_common.h>
 
-#if (defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#if (defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                            \
+    !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)) &&                       \
+    !(defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__))
 #include <hip/amd_detail/amd_hip_runtime.h>
-#elif !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#elif (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)) &&                      \
+    !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                           \
+    !(defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__))
 #include <hip/nvidia_detail/nvidia_hip_runtime.h>
+
+#elif (defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__)) &&                      \
+    !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                           \
+    !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#include "spirv_hip_runtime.h"
+
 #else
-#error("Must define exactly one of __HIP_PLATFORM_AMD__ or __HIP_PLATFORM_NVIDIA__");
+#error("Must define exactly one of __HIP_PLATFORM_AMD__, __HIP_PLATFORM_NVIDIA__ or __HIP_PLATFORM_SPIRV__");
 #endif
 
 // The following are deprecation notices.
 // They will be removed after upstream updation
-#if 0 // Temporarily disable deprecation warning as it will fail rocgdb test
+#if 0  // Temporarily disable deprecation warning as it will fail rocgdb test
 #if defined(__clang__)
 //The following work for clang rather than for gnu gcc/g++/c++
 #pragma GCC diagnostic push
@@ -92,27 +103,27 @@ THE SOFTWARE.
 #elif defined(__GNUC__)
 //The following work for gnu gcc/g++/c++ rather than for clang
 #ifdef __HCC__
-#pragma message ("__HCC__ is deprecated, please don't use it")
+#pragma message("__HCC__ is deprecated, please don't use it")
 #endif
 
 #ifdef __HIP_ROCclr__
-#pragma message ("__HIP_ROCclr__ is deprecated, please don't use it")
+#pragma message("__HIP_ROCclr__ is deprecated, please don't use it")
 #endif
 
 #ifdef __HIP_PLATFORM_HCC__
-#pragma message ("__HIP_PLATFORM_HCC__ is deprecated, please use __HIP_PLATFORM_AMD__ instead")
+#pragma message("__HIP_PLATFORM_HCC__ is deprecated, please use __HIP_PLATFORM_AMD__ instead")
 #endif
 
 #ifdef __HIP_PLATFORM_NVCC_
-#pragma message ("__HIP_PLATFORM_NVCC_ is deprecated, please use __HIP_PLATFORM_NVIDIA__ instead")
+#pragma message("__HIP_PLATFORM_NVCC_ is deprecated, please use __HIP_PLATFORM_NVIDIA__ instead")
 #endif
-#endif // defined(__clang__)
+#endif  // defined(__clang__)
 #endif
 
 #if !defined(__HIPCC_RTC__)
 #include <hip/hip_runtime_api.h>
 #include <hip/library_types.h>
-#endif // !defined(__HIPCC_RTC__)
+#endif  // !defined(__HIPCC_RTC__)
 #include <hip/hip_vector_types.h>
 
 #endif

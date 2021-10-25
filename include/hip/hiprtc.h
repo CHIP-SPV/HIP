@@ -23,9 +23,13 @@ THE SOFTWARE.
 
 #include <hip/hip_common.h>
 
-#if !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
-    #include <hip/nvidia_detail/nvidia_hiprtc.h>
-#elif (defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) && !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
+#if (defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)) &&                        \
+    !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__))
+#include <hip/nvidia_detail/nvidia_hiprtc.h>
+
+#elif ((defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) ||                         \
+       (defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__))) &&                    \
+    !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
 
 /**
  *  @addtogroup Runtime Runtime Compilation
@@ -40,7 +44,7 @@ extern "C" {
 #include <stdlib.h>
 
 #if !defined(_WIN32)
-#pragma GCC visibility push (default)
+#pragma GCC visibility push(default)
 #endif
 
 /**
@@ -50,21 +54,21 @@ extern "C" {
  */
 
 typedef enum hiprtcResult {
-    HIPRTC_SUCCESS = 0,
-    HIPRTC_ERROR_OUT_OF_MEMORY = 1,
-    HIPRTC_ERROR_PROGRAM_CREATION_FAILURE = 2,
-    HIPRTC_ERROR_INVALID_INPUT = 3,
-    HIPRTC_ERROR_INVALID_PROGRAM = 4,
-    HIPRTC_ERROR_INVALID_OPTION = 5,
-    HIPRTC_ERROR_COMPILATION = 6,
-    HIPRTC_ERROR_BUILTIN_OPERATION_FAILURE = 7,
-    HIPRTC_ERROR_NO_NAME_EXPRESSIONS_AFTER_COMPILATION = 8,
-    HIPRTC_ERROR_NO_LOWERED_NAMES_BEFORE_COMPILATION = 9,
-    HIPRTC_ERROR_NAME_EXPRESSION_NOT_VALID = 10,
-    HIPRTC_ERROR_INTERNAL_ERROR = 11
+  HIPRTC_SUCCESS = 0,
+  HIPRTC_ERROR_OUT_OF_MEMORY = 1,
+  HIPRTC_ERROR_PROGRAM_CREATION_FAILURE = 2,
+  HIPRTC_ERROR_INVALID_INPUT = 3,
+  HIPRTC_ERROR_INVALID_PROGRAM = 4,
+  HIPRTC_ERROR_INVALID_OPTION = 5,
+  HIPRTC_ERROR_COMPILATION = 6,
+  HIPRTC_ERROR_BUILTIN_OPERATION_FAILURE = 7,
+  HIPRTC_ERROR_NO_NAME_EXPRESSIONS_AFTER_COMPILATION = 8,
+  HIPRTC_ERROR_NO_LOWERED_NAMES_BEFORE_COMPILATION = 9,
+  HIPRTC_ERROR_NAME_EXPRESSION_NOT_VALID = 10,
+  HIPRTC_ERROR_INTERNAL_ERROR = 11
 } hiprtcResult;
 
- /**
+/**
  * @brief Returns text string message to explain the error which occurred
  *
  * @param [in] result  code to convert to string.
@@ -99,8 +103,7 @@ typedef struct _hiprtcProgram* hiprtcProgram;
  *
  * @see hiprtcResult
  */
-hiprtcResult hiprtcAddNameExpression(hiprtcProgram prog,
-                                     const char* name_expression);
+hiprtcResult hiprtcAddNameExpression(hiprtcProgram prog, const char* name_expression);
 
 /**
  * @brief Compiles the given runtime compilation program.
@@ -115,9 +118,7 @@ hiprtcResult hiprtcAddNameExpression(hiprtcProgram prog,
  *
  * @see hiprtcResult
  */
-hiprtcResult hiprtcCompileProgram(hiprtcProgram prog,
-                                  int numOptions,
-                                  const char** options);
+hiprtcResult hiprtcCompileProgram(hiprtcProgram prog, int numOptions, const char** options);
 
 /**
  * @brief Creates an instance of hiprtcProgram with the given input parameters,
@@ -138,12 +139,8 @@ hiprtcResult hiprtcCompileProgram(hiprtcProgram prog,
  *
  * @see hiprtcResult
  */
-hiprtcResult hiprtcCreateProgram(hiprtcProgram* prog,
-                                 const char* src,
-                                 const char* name,
-                                 int numHeaders,
-                                 const char** headers,
-                                 const char** includeNames);
+hiprtcResult hiprtcCreateProgram(hiprtcProgram* prog, const char* src, const char* name,
+                                 int numHeaders, const char** headers, const char** includeNames);
 
 /**
  * @brief Destroys an instance of given hiprtcProgram.
@@ -158,8 +155,8 @@ hiprtcResult hiprtcCreateProgram(hiprtcProgram* prog,
 hiprtcResult hiprtcDestroyProgram(hiprtcProgram* prog);
 
 /**
- * @brief Gets the lowered (mangled) name from an instance of hiprtcProgram with the given input parameters,
- * and sets the output lowered_name with it.
+ * @brief Gets the lowered (mangled) name from an instance of hiprtcProgram with the given input
+ * parameters, and sets the output lowered_name with it.
  *
  * @param [in] prog  runtime compilation program instance.
  * @param [in] name_expression  const char pointer to the name expression.
@@ -174,8 +171,7 @@ hiprtcResult hiprtcDestroyProgram(hiprtcProgram* prog);
  *
  * @see hiprtcResult
  */
-hiprtcResult hiprtcGetLoweredName(hiprtcProgram prog,
-                                  const char* name_expression,
+hiprtcResult hiprtcGetLoweredName(hiprtcProgram prog, const char* name_expression,
                                   const char** lowered_name);
 
 /**
@@ -198,8 +194,7 @@ hiprtcResult hiprtcGetProgramLog(hiprtcProgram prog, char* log);
  *
  * @see hiprtcResult
  */
-hiprtcResult hiprtcGetProgramLogSize(hiprtcProgram prog,
-                                     size_t* logSizeRet);
+hiprtcResult hiprtcGetProgramLogSize(hiprtcProgram prog, size_t* logSizeRet);
 
 /**
  * @brief Gets the pointer of compilation binary by the runtime compilation program instance.
@@ -235,5 +230,5 @@ hiprtcResult hiprtcGetCodeSize(hiprtcProgram prog, size_t* codeSizeRet);
  * @}
  */
 #else
-#error("Must define exactly one of __HIP_PLATFORM_AMD__ or __HIP_PLATFORM_NVIDIA__");
+#error("Must define exactly one of __HIP_PLATFORM_AMD__, __HIP_PLATFORM_NVIDIA__ or __HIP_PLATFORM_SPIRV__");
 #endif
