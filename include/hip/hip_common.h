@@ -26,16 +26,16 @@ THE SOFTWARE.
 // Common code included at start of every hip file.
 // Auto enable __HIP_PLATFORM_AMD__ if compiling on AMD platform
 // Other compiler (GCC,ICC,etc) need to set one of these macros explicitly
-#if defined(__clang__) && defined(__HIP__)
-// The following macro will be removed after upstream updation
-#ifndef __HIP_PLATFORM_HCC__
-#define __HIP_PLATFORM_HCC__
-#endif
+// #if defined(__clang__) && defined(__HIP__)
+// // The following macro will be removed after upstream updation
+// #ifndef __HIP_PLATFORM_HCC__
+// #define __HIP_PLATFORM_HCC__
+// #endif
 
-#ifndef __HIP_PLATFORM_AMD__
-#define __HIP_PLATFORM_AMD__
-#endif
-#endif  // defined(__clang__) && defined(__HIP__)
+// #ifndef __HIP_PLATFORM_AMD__
+// #define __HIP_PLATFORM_AMD__
+// #endif
+// #endif  // defined(__clang__) && defined(__HIP__)
 
 // Auto enable __HIP_PLATFORM_NVIDIA__ if compiling with NVIDIA platform
 #if defined(__NVCC__) || (defined(__clang__) && defined(__CUDA__) && !defined(__HIP__))
@@ -54,18 +54,21 @@ THE SOFTWARE.
 
 #endif  //__NVCC__
 
-// Auto enable __HIP_DEVICE_COMPILE__ if compiled in HCC or NVCC device path
-#if (defined(__HCC_ACCELERATOR__) && __HCC_ACCELERATOR__ != 0) ||                                  \
-    (defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0)
-#define __HIP_DEVICE_COMPILE__ 1
-#endif
+// // Auto enable __HIP_DEVICE_COMPILE__ if compiled in HCC or NVCC device path
+// #if (defined(__HCC_ACCELERATOR__) && __HCC_ACCELERATOR__ != 0) || \
+//     (defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0)
+// #define __HIP_DEVICE_COMPILE__ 1
+// #endif
+// #if (defined(__clang__) && defined(__HIP_DEVICE_COMPILE__))
+// #define __HIP_DEVICE_COMPILE__ 1
+// #endif
 
 #ifdef __GNUC__
-#define HIP_PUBLIC_API              __attribute__ ((visibility ("default")))
-#define HIP_INTERNAL_EXPORTED_API   __attribute__ ((visibility ("default")))
+#define HIP_PUBLIC_API __attribute__((visibility("default")))
+#define HIP_INTERNAL_EXPORTED_API __attribute__((visibility("default")))
 #else
 #define HIP_PUBLIC_API
-#define HIP_INTERNAL_EXPORTED_API 
+#define HIP_INTERNAL_EXPORTED_API
 #endif
 
 #if __HIP_DEVICE_COMPILE__ == 0

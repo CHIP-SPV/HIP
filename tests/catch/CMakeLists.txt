@@ -10,6 +10,10 @@ elseif(HIP_PLATFORM STREQUAL "nvidia")
     if(NOT DEFINED HIP_COMPILER OR NOT HIP_COMPILER STREQUAL "nvcc")
         message(FATAL_ERROR "Unexpected HIP_COMPILER: ${HIP_COMPILER} is set for HIP_PLATFORM:nvidia")
     endif()
+elseif(HIP_PLATFORM STREQUAL "spirv")
+    if(NOT DEFINED HIP_COMPILER OR NOT HIP_COMPILER STREQUAL "clang")
+        message(FATAL_ERROR "Unexpected HIP_COMPILER: ${HIP_COMPILER} is set for HIP_PLATFORM:spirv")
+    endif()
 else()
     message(FATAL_ERROR "Unexpected HIP_PLATFORM: " ${HIP_PLATFORM})
 endif()
@@ -24,7 +28,7 @@ if(NOT DEFINED HIP_PATH)
 endif()
 message(STATUS "HIP Path: ${HIP_PATH}")
 
-set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc")
+set(CMAKE_CXX_COMPILER "/soft/compilers/clang-hipcl/13.0-experimental/bin/clang")
 
 if(NOT DEFINED CATCH2_PATH)
     if(DEFINED ENV{CATCH2_PATH})
@@ -100,7 +104,7 @@ if(NOT DEFINED OFFLOAD_ARCH_STR AND EXISTS "${ROCM_PATH}/bin/rocm_agent_enumerat
 endif()
 
 if(DEFINED OFFLOAD_ARCH_STR)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OFFLOAD_ARCH_STR} ")
+    add_compile_options(${OFFLOAD_ARCH_STR})
 endif()
 
 # Use clang as host compiler with nvcc
