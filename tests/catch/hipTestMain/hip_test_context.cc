@@ -60,7 +60,7 @@ void TestContext::fillConfig() {
 
   if (config_.os == "unknown" || config_.platform == "unknown") {
     LogPrintf("%s", "Either Config or Os is unknown, this wont end well");
-    abort();
+    // abort(); // TODO
   }
 }
 
@@ -131,7 +131,7 @@ bool TestContext::parseJsonFile() {
     return false;
   }
 
-  const picojson::object &o = v.get<picojson::object>();
+  const picojson::object& o = v.get<picojson::object>();
   for (picojson::object::const_iterator i = o.begin(); i != o.end(); ++i) {
     // Processing for DisabledTests
     if (i->first == "DisabledTests") {
@@ -142,7 +142,7 @@ bool TestContext::parseJsonFile() {
       for (auto ai = val.begin(); ai != val.end(); ai++) {
         std::string tmp = ai->get<std::string>();
         std::string newRegexName;
-        for(const auto &c : tmp) {
+        for (const auto& c : tmp) {
           if (c == '*')
             newRegexName += ".*";
           else

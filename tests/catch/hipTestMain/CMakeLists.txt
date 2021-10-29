@@ -23,12 +23,13 @@ if(CMAKE_BUILD_TYPE MATCHES "^Debug$")
 endif()
 
 add_executable(UnitTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
+add_executable(MiniTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
 if(HIP_PLATFORM MATCHES "amd")
     set_property(TARGET UnitTests PROPERTY CXX_STANDARD 17)
 else()
     target_compile_options(UnitTests PUBLIC -std=c++17)
 endif()
-
+target_link_libraries(MiniTests PRIVATE MemoryTest stdc++fs stdc++)
 target_link_libraries(UnitTests PRIVATE UnitDeviceTests
                                         MemoryTest
                                         StreamTest
@@ -43,6 +44,9 @@ target_link_libraries(UnitTests PRIVATE UnitDeviceTests
 if(HIP_PLATFORM MATCHES "nvidia")
     target_link_libraries(UnitTests PRIVATE nvrtc)
 endif()
+
+find_library(CHIP_SPV NAMES CHIP PATHS /home/pvelesko/CHIP-SPV/build REQUIRED)
+target_link_libraries(MiniTests PUBLIC CHIP)
 
 catch_discover_tests(UnitTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
 

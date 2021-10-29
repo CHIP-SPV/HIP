@@ -28,8 +28,6 @@ if(NOT DEFINED HIP_PATH)
 endif()
 message(STATUS "HIP Path: ${HIP_PATH}")
 
-set(CMAKE_CXX_COMPILER "/soft/compilers/clang-hipcl/13.0-experimental/bin/clang")
-
 if(NOT DEFINED CATCH2_PATH)
     if(DEFINED ENV{CATCH2_PATH})
         set(CATCH2_PATH $ENV{CATCH2_PATH} CACHE STRING "Catch2 Path")

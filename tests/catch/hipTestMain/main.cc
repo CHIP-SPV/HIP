@@ -1,4 +1,6 @@
 #define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_NO_POSIX_SIGNALS
+#define CATCH_INTERNAL_CONFIG_NO_POSIX_SIGNALS
 #include <hip_test_common.hh>
 #include <iostream>
 
