@@ -45,8 +45,6 @@ if(HIP_PLATFORM MATCHES "nvidia")
     target_link_libraries(UnitTests PRIVATE nvrtc)
 endif()
 
-find_library(CHIP_SPV NAMES CHIP PATHS /home/pvelesko/CHIP-SPV/build REQUIRED)
-target_link_libraries(MiniTests PUBLIC CHIP)
 
 catch_discover_tests(UnitTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
 
