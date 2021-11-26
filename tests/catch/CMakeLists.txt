@@ -61,6 +61,8 @@ include_directories(
     "./include"
     ${HIP_PATH}/include
     ${JSON_PARSER}
+    ${CHIP_DIR_}/HIP/include  #TODO
+    ${CHIP_DIR_}/include # TODO
 )
 
 if(HIP_PLATFORM MATCHES "amd" AND HIP_COMPILER MATCHES "clang")

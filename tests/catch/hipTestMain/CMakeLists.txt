@@ -29,7 +29,7 @@ if(HIP_PLATFORM MATCHES "amd")
 else()
     target_compile_options(UnitTests PUBLIC -std=c++17)
 endif()
-target_link_libraries(MiniTests PRIVATE MemoryTest TextureTest stdc++fs stdc++ CHIP)
+target_link_libraries(MiniTests PRIVATE MemoryTest TextureTest EventTest stdc++fs stdc++ CHIP)
 target_link_libraries(UnitTests PRIVATE UnitDeviceTests
                                         MemoryTest
                                         StreamTest
