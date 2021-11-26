@@ -35,7 +35,7 @@ target_link_libraries(MiniTests PRIVATE #UnitDeviceTests
                                         EventTest
                                         OccupancyTest
                                         DeviceTest
-                                        #RTC
+                                        RTC
                                         #printfTests
                                         TextureTest
                                         stdc++
