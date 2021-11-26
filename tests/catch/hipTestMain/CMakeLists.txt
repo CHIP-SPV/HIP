@@ -31,7 +31,7 @@ else()
 endif()
 target_link_libraries(MiniTests PRIVATE #UnitDeviceTests
                                         MemoryTest
-                                        #StreamTest
+                                        StreamTest
                                         EventTest
                                         #OccupancyTest
                                         #DeviceTest
