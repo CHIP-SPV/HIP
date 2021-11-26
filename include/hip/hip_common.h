@@ -59,9 +59,11 @@ THE SOFTWARE.
 //     (defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0)
 // #define __HIP_DEVICE_COMPILE__ 1
 // #endif
-// #if (defined(__clang__) && defined(__HIP_DEVICE_COMPILE__))
-// #define __HIP_DEVICE_COMPILE__ 1
-// #endif
+// TODO
+#if (defined(__clang__) && defined(__HIP_DEVICE_COMPILE__))
+#define __HIP_DEVICE_COMPILE__ 1
+#endif
+
 
 #ifdef __GNUC__
 #define HIP_PUBLIC_API __attribute__((visibility("default")))
