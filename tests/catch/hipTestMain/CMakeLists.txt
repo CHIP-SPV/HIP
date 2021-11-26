@@ -33,7 +33,7 @@ target_link_libraries(MiniTests PRIVATE #UnitDeviceTests
                                         MemoryTest
                                         StreamTest
                                         EventTest
-                                        #OccupancyTest
+                                        OccupancyTest
                                         #DeviceTest
                                         #RTC
                                         #printfTests
