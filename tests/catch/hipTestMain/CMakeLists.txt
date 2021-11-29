@@ -29,7 +29,7 @@ if(HIP_PLATFORM MATCHES "amd")
 else()
     target_compile_options(UnitTests PUBLIC -std=c++17)
 endif()
-target_link_libraries(MiniTests PRIVATE #UnitDeviceTests
+target_link_libraries(MiniTests PRIVATE UnitDeviceTests
                                         MemoryTest
                                         StreamTest
                                         EventTest
