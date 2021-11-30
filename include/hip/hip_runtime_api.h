@@ -1003,6 +1003,10 @@ typedef hipGraphicsResource* hipGraphicsResource_t;
  */
 // TODO-ctx - more description on error codes.
 hipError_t hipInit(unsigned int flags);
+
+// TODO docstring
+hipError_t hipStreamGetBackendHandles(hipStream_t stream, unsigned long* nativeInfo, int* size);
+
 /**
  * @brief Returns the approximate HIP driver version.
  *
