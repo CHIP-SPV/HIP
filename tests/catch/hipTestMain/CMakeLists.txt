@@ -23,45 +23,33 @@ if(CMAKE_BUILD_TYPE MATCHES "^Debug$")
 endif()
 
 add_executable(UnitTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
-add_executable(MiniTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
 
-add_executable(UnitDeviceTestsMain  main.cc hip_test_context.cc)
-add_executable(MemoryTestsMain  main.cc hip_test_context.cc)
-add_executable(StreamTestMain  main.cc hip_test_context.cc)
-add_executable(EventTestMain  main.cc hip_test_context.cc)
-add_executable(OccupancyTestMain  main.cc hip_test_context.cc)
-add_executable(DeviceTestsMain  main.cc hip_test_context.cc)
-add_executable(RTCMain  main.cc hip_test_context.cc)
+#add_executable(UnitDeviceTestsMain  main.cc hip_test_context.cc)
+#add_executable(MemoryTestsMain  main.cc hip_test_context.cc)
+#add_executable(StreamTestMain  main.cc hip_test_context.cc)
+#add_executable(EventTestMain  main.cc hip_test_context.cc)
+#add_executable(OccupancyTestMain  main.cc hip_test_context.cc)
+#add_executable(DeviceTestsMain  main.cc hip_test_context.cc)
+#add_executable(RTCMain  main.cc hip_test_context.cc)
 #add_executable(printfTestsMain  main.cc hip_test_context.cc)
-add_executable(TextureTestMain  main.cc hip_test_context.cc)
+#add_executable(TextureTestMain  main.cc hip_test_context.cc)
 
 if(HIP_PLATFORM MATCHES "amd")
     set_property(TARGET UnitTests PROPERTY CXX_STANDARD 17)
 else()
     target_compile_options(UnitTests PUBLIC -std=c++17)
 endif()
-target_link_libraries(UnitDeviceTestsMain PRIVATE UnitDeviceTests stdc++ stdc++fs CHIP)
-target_link_libraries(MemoryTestsMain PRIVATE MemoryTest stdc++ stdc++fs CHIP)
-target_link_libraries(StreamTestMain PRIVATE StreamTest stdc++ stdc++fs CHIP)
-target_link_libraries(EventTestMain PRIVATE EventTest stdc++ stdc++fs CHIP)
-target_link_libraries(OccupancyTestMain PRIVATE OccupancyTest stdc++ stdc++fs CHIP)
-target_link_libraries(DeviceTestsMain PRIVATE DeviceTest stdc++ stdc++fs CHIP)
-target_link_libraries(RTCMain PRIVATE RTC stdc++ stdc++fs CHIP)
-#target_link_libraries(printfTestsMain PRIVATE printfTests stdc++ stdc++fs CHIP)
-target_link_libraries(TextureTestMain PRIVATE TextureTest stdc++ stdc++fs CHIP)
 
-target_link_libraries(MiniTests PRIVATE UnitDeviceTests
-                                        MemoryTest
-                                        StreamTest
-                                        EventTest
-                                        OccupancyTest
-                                        DeviceTest
-                                        RTC
-                                        #printfTests
-                                        TextureTest
-                                        stdc++
-                                        stdc++fs
-                                        CHIP)
+#target_link_libraries(UnitDeviceTestsMain PRIVATE UnitDeviceTests stdc++ stdc++fs CHIP)
+#target_link_libraries(MemoryTestsMain PRIVATE MemoryTest stdc++ stdc++fs CHIP)
+#target_link_libraries(StreamTestMain PRIVATE StreamTest stdc++ stdc++fs CHIP)
+#target_link_libraries(EventTestMain PRIVATE EventTest stdc++ stdc++fs CHIP)
+#target_link_libraries(OccupancyTestMain PRIVATE OccupancyTest stdc++ stdc++fs CHIP)
+#target_link_libraries(DeviceTestsMain PRIVATE DeviceTest stdc++ stdc++fs CHIP)
+#target_link_libraries(RTCMain PRIVATE RTC stdc++ stdc++fs CHIP)
+#target_link_libraries(printfTestsMain PRIVATE printfTests stdc++ stdc++fs CHIP)
+#target_link_libraries(TextureTestMain PRIVATE TextureTest stdc++ stdc++fs CHIP)
+
 target_link_libraries(UnitTests PRIVATE UnitDeviceTests
                                         MemoryTest
                                         StreamTest
@@ -71,12 +59,15 @@ target_link_libraries(UnitTests PRIVATE UnitDeviceTests
                                         RTC
                                         printfTests
                                         TextureTest
-                                        stdc++fs)
-
+                                        stdc++fs
+                                        )
 if(HIP_PLATFORM MATCHES "nvidia")
     target_link_libraries(UnitTests PRIVATE nvrtc)
 endif()
 
+if(HIP_PLATFORM MATCHES "spirv")
+    target_link_libraries(UnitTests PRIVATE CHIP)
+endif()
 
 catch_discover_tests(UnitTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
 
