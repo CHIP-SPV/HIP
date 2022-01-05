@@ -118,6 +118,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_custom_target(build_tests)
 
 # Tests folder
+if(HIP_PLATFORM STREQUAL "spirv")
+    link_libraries(CHIP)
+endif()
+
 add_subdirectory(unit)
 add_subdirectory(ABM)
 add_subdirectory(hipTestMain)
