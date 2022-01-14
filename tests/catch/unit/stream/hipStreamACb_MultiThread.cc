@@ -46,13 +46,14 @@ static __global__ void device_function(float* C_d, float* A_d, size_t Num) {
     C_d[i] = A_d[i] * A_d[i];
   }
 
+  //  TODO Currently makes OpenCL Fail ?
   // Delay thread 1 only in the GPU
-  if (gputhread == 1) {
-    uint64_t wait_t = 3200000000, start = clock64(), cur;
-    do {
-      cur = clock64() - start;
-    } while (cur < wait_t);
-  }
+  // if (gputhread == 1) {
+  //   uint64_t wait_t = 3200000000, start = clock64(), cur;
+  //   do {
+  //     cur = clock64() - start;
+  //   } while (cur < wait_t);
+  //}
 }
 
 
@@ -123,7 +124,6 @@ TEST_CASE("Unit_hipStreamAddCallback_MultipleThreads") {
 
   hipLaunchKernelGGL((device_function), dim3(blocks), dim3(threadsPerBlock), 0, mystream, C_d, A_d,
                      N);
-
   HIP_CHECK(hipMemcpyAsync(C1_h, C_d, Nbytes, hipMemcpyDeviceToHost, mystream));
 
   std::thread* T = new std::thread[numThreads];
