@@ -22,9 +22,15 @@ THE SOFTWARE.
 
 #include <hip_test_common.hh>
 #include <hip_test_process.hh>
+#include <regex>
 
 TEST_CASE("Unit_printf_specifier") {
+
+  hip::SpawnProc proc("unit/printfExe/printfSepcifiers", true);
+  REQUIRE(0 == proc.run());
+
 #ifdef __HIP_PLATFORM_NVIDIA__
+
   std::string reference(R"here(xyzzy
 %
 hello % world
@@ -45,8 +51,13 @@ x
 (nil)
 3.14159000    hello 0xf01dab1eca55e77e
 )here");
+
+  REQUIRE(proc.getOutput(), reference);
+
 #elif !defined(_WIN32)
-  std::string reference(R"here(xyzzy
+
+  // Account for float rounding errors etc. due to unknown platform.
+  std::string Reference(R"here(xyzzy
 %
 hello % world
 %s
@@ -55,19 +66,35 @@ hello % world
 sep
 -42
 42
-123.456000
--123.456000
--1.234560e+02
-1.234560E+02
-123.456
--123.456
+123.45600[01]
+-123.45600[01]
+-1\.234560e\+02
+1\.234560E\+02
+123\.456
+-123\.456
 x
-
-(nil)
-3.14159000    hello 0xf01dab1eca55e77e
+\(null\)
+0x
+3.14159012[ ]+hello 0xf01dab1eca55e77e
 )here");
+
+  std::stringstream GoldenSS(Reference);
+  std::stringstream CheckedSS(proc.getOutput());
+
+  std::string Golden, Checked;
+  while (getline(GoldenSS, Golden)) {
+    REQUIRE(getline(CheckedSS, Checked));
+    std::regex RegEx(Golden);
+    if (!std::regex_match(Checked, RegEx)) {
+      std::cerr << "'" << Checked << "' doesn't match regexp '"
+		<< Golden << "'." << std::endl;
+      REQUIRE(std::regex_match(Checked, RegEx));
+    }
+  }
+
 #else
-  std::string reference(R"here(xyzzy
+
+  std::regex reference(R"here(xyzzy
 %
 hello % world
 %s
@@ -87,9 +114,9 @@ x
 0000000000000000
 3.14159000    hello F01DAB1ECA55E77E
 )here");
+
+  REQUIRE(proc.getOutput(), reference));
+
 #endif
 
-  hip::SpawnProc proc("unit/printfExe/printfSepcifiers", true);
-  REQUIRE(0 == proc.run());
-  REQUIRE(proc.getOutput() == reference);
 }
