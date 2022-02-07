@@ -27,17 +27,18 @@ THE SOFTWARE.
 
 #define _SIZE sizeof(int) * 1024 * 1024
 #define NUM_STREAMS 2
+#define NUM_ITERS 1 << 30
 
 static __global__ void Iter(int* Ad, int num) {
-    int tx = threadIdx.x + blockIdx.x * blockDim.x;
-    // Kernel loop designed to execute very slowly.
-    // so we can test timing-related
-    // behavior below
-    if (tx == 0) {
-        for (int i = 0; i < num; i++) {
-            Ad[tx] += 1;
-        }
+  int tx = threadIdx.x + blockIdx.x * blockDim.x;
+  // Kernel loop designed to execute very slowly.
+  // so we can test timing-related
+  // behavior below
+  if (tx == 0) {
+    for (int i = 0; i < num; i++) {
+      Ad[tx] += 1;
     }
+  }
 }
 
 TEST_CASE("Unit_hipDeviceSynchronize_Functional") {
@@ -45,23 +46,21 @@ TEST_CASE("Unit_hipDeviceSynchronize_Functional") {
   int* Ad[NUM_STREAMS];
   hipStream_t stream[NUM_STREAMS];
   for (int i = 0; i < NUM_STREAMS; i++) {
-      HIP_CHECK(hipHostMalloc(reinterpret_cast<void**>(&A[i]), _SIZE,
-                                                   hipHostMallocDefault));
-      A[i][0] = 1;
-      HIP_CHECK(hipMalloc(reinterpret_cast<void**>(&Ad[i]), _SIZE));
-      HIP_CHECK(hipStreamCreate(&stream[i]));
+    HIP_CHECK(hipHostMalloc(reinterpret_cast<void**>(&A[i]), _SIZE, hipHostMallocDefault));
+    A[i][0] = 1;
+    HIP_CHECK(hipMalloc(reinterpret_cast<void**>(&Ad[i]), _SIZE));
+    HIP_CHECK(hipStreamCreate(&stream[i]));
+  }
+
+
+  for (int i = 0; i < NUM_STREAMS; i++) {
+    HIP_CHECK(hipMemcpyAsync(Ad[i], A[i], _SIZE, hipMemcpyHostToDevice, stream[i]));
   }
   for (int i = 0; i < NUM_STREAMS; i++) {
-      HIP_CHECK(hipMemcpyAsync(Ad[i], A[i], _SIZE, hipMemcpyHostToDevice,
-                                                               stream[i]));
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(Iter), dim3(1), dim3(1), 0, stream[i], Ad[i], NUM_ITERS);
   }
   for (int i = 0; i < NUM_STREAMS; i++) {
-      hipLaunchKernelGGL(HIP_KERNEL_NAME(Iter), dim3(1), dim3(1), 0,
-                                                stream[i], Ad[i], 1 << 30);
-  }
-  for (int i = 0; i < NUM_STREAMS; i++) {
-      HIP_CHECK(hipMemcpyAsync(A[i], Ad[i], _SIZE, hipMemcpyDeviceToHost,
-                                                               stream[i]));
+    HIP_CHECK(hipMemcpyAsync(A[i], Ad[i], _SIZE, hipMemcpyDeviceToHost, stream[i]));
   }
 
 
@@ -71,7 +70,7 @@ TEST_CASE("Unit_hipDeviceSynchronize_Functional") {
   // Conservative implementations which synchronize the hipMemcpyAsync will
   // fail, ie if HIP_LAUNCH_BLOCKING=true.
 
-  CHECK(1 << 30 != A[NUM_STREAMS - 1][0] - 1);
+  CHECK(NUM_ITERS != A[NUM_STREAMS - 1][0] - 1);
   HIP_CHECK(hipDeviceSynchronize());
-  CHECK(1 << 30 == A[NUM_STREAMS - 1][0] - 1);
+  CHECK(NUM_ITERS == A[NUM_STREAMS - 1][0] - 1);
 }
