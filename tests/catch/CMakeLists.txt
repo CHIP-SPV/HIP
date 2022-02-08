@@ -128,8 +128,8 @@ add_subdirectory(hipTestMain)
 add_subdirectory(stress)
 #add_subdirectory(TypeQualifiers)
 
-if(UNIX)
-    add_subdirectory(multiproc)
-endif()
+# if(UNIX)
+#     add_subdirectory(multiproc)
+# endif()
 
 cmake_policy(POP)
