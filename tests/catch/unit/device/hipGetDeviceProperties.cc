@@ -141,7 +141,7 @@ static void validateDeviceMacro(int *archProp_h, hipDeviceProp_t *prop) {
  * __HIP_ARCH_HAS_3DGRID__ == has3dGrid
  * __HIP_ARCH_HAS_DYNAMIC_PARALLEL__ == hasDynamicParallelism
  */
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
 TEST_CASE("Unit_hipGetDeviceProperties_ArchPropertiesTst") {
   int *archProp_h, *archProp_d;
   archProp_h = new int[NUM_OF_ARCHPROP];
@@ -182,7 +182,7 @@ TEST_CASE("Unit_hipGetDeviceProperties_ArchPropertiesTst") {
 TEST_CASE("Unit_hipGetDeviceProperties_NegTst") {
   hipDeviceProp_t prop;
 
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   SECTION("props is nullptr") {
     int device;
     HIP_CHECK(hipGetDevice(&device));
