@@ -1,5 +1,55 @@
 # Common Tests - Test independent of all platforms
-if(HIP_PLATFORM MATCHES "amd")
+if(HIP_PLATFORM MATCHES "spirv")
+set(TEST_SRC
+    memset.cc
+    malloc.cc
+    hipMemcpy2DToArray.cc
+    hipMemcpy2DToArrayAsync.cc
+    hipMemcpyPeer.cc
+    hipMemcpyPeerAsync.cc
+    hipMemcpy3D.cc
+    hipMemcpy3DAsync.cc
+    hipMemcpyParam2D.cc
+    hipMemcpyParam2DAsync.cc
+    hipMemcpy2D.cc
+    hipMemcpy2DAsync.cc
+    hipMemcpy2DFromArray.cc
+    hipMemcpy2DFromArrayAsync.cc
+    hipMemcpyAtoH.cc
+    hipMemcpyHtoA.cc
+    hipMemcpyDtoD.cc
+    hipMemcpyDtoDAsync.cc
+    hipMemcpyAsync.cc
+    hipMemcpy.cc
+    hipMemcpyWithStream.cc
+    hipMemcpyAllApiNegative.cc
+    hipMemcpyWithStreamMultiThread.cc
+    hipMemcpy_MultiThread.cc
+    hipHostMalloc.cc
+    hipHostRegister.cc
+    hipMemPtrGetInfo.cc
+    hipPointerGetAttributes.cc
+    hipHostGetFlags.cc
+    # hipMemoryAllocateCoherent.cc
+    hipMallocManaged_MultiScenario.cc
+    hipMemsetInvalidPtr.cc
+    hipMemset.cc
+    hipMemsetAsyncMultiThread.cc
+    hipMemsetAsyncAndKernel.cc
+    hipMemset3D.cc
+    hipMemset2D.cc
+    hipMemset2DAsyncMultiThreadAndKernel.cc
+    hipHostMallocTests.cc
+    hipMallocConcurrency.cc
+    hipMemset3DFunctional.cc
+    hipMemset3DNegative.cc
+    hipMemset3DRegressMultiThread.cc
+    hipMallocManagedFlagsTst.cc
+    hipMemPrefetchAsyncExtTsts.cc
+    hipMemAdviseMmap.cc
+    hipMallocManaged.cc
+)
+elseif(HIP_PLATFORM MATCHES "amd")
 set(TEST_SRC
     memset.cc
     malloc.cc
