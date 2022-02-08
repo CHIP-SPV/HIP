@@ -69,8 +69,8 @@ typedef struct Config_ {
 } Config;
 
 class TestContext {
-  bool p_windows = false, p_linux = false;  // OS
-  bool amd = false, nvidia = false;         // HIP Platform
+  bool p_windows = false, p_linux = false;          // OS
+  bool amd = false, nvidia = false, spirv = false;  // HIP Platform
   std::string exe_path;
   std::string current_test;
   std::set<std::string> skip_test;

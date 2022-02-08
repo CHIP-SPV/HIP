@@ -28,6 +28,8 @@ void TestContext::detectPlatform() {
   amd = true;
 #elif (HT_NVIDIA == 1)
   nvidia = true;
+#elif (HT_SPIRV == 1)
+  spirv = true;
 #endif
 }
 
