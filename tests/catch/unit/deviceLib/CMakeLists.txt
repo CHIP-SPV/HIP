@@ -12,11 +12,11 @@ set(TEST_SRC
     syncthreadsand.cc
     syncthreadscount.cc
     syncthreadsor.cc
-    threadfence_system.cc
 )
 
 # AMD only tests
 set(AMD_TEST_SRC
+    threadfence_system.cc
     unsafeAtomicAdd.cc
     vectorTypesDevice.cc
     mbcnt.cc
