@@ -87,20 +87,20 @@ catch_discover_tests(ABMTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS
 add_dependencies(build_tests UnitTests ABMTests)
 
 # Add Multiproc tests as seperate binary
-if(UNIX)
-    add_executable(MultiProcTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
+# if(UNIX)
+#     add_executable(MultiProcTests EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
 
-    if(HIP_PLATFORM MATCHES "amd")
-        set_property(TARGET MultiProcTests PROPERTY CXX_STANDARD 17)
-    else()
-        target_compile_options(MultiProcTests PUBLIC -std=c++17)
-    endif()
+#     if(HIP_PLATFORM MATCHES "amd")
+#         set_property(TARGET MultiProcTests PROPERTY CXX_STANDARD 17)
+#     else()
+#         target_compile_options(MultiProcTests PUBLIC -std=c++17)
+#     endif()
 
-    target_link_libraries(MultiProcTests PRIVATE MultiProc
-                                          stdc++fs)
-    catch_discover_tests(MultiProcTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
-    add_dependencies(build_tests MultiProcTests)
-endif()
+#     target_link_libraries(MultiProcTests PRIVATE MultiProc
+#                                           stdc++fs)
+#     catch_discover_tests(MultiProcTests PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
+#     add_dependencies(build_tests MultiProcTests)
+# endif()
 
 add_executable(StressTest EXCLUDE_FROM_ALL main.cc hip_test_context.cc)
 add_custom_target(build_stress_test)
