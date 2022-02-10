@@ -47,7 +47,7 @@ if(NOT DEFINED JSON_PARSER)
 endif()
 
 message(STATUS "Searching Catch2 in: ${CMAKE_CURRENT_LIST_DIR}/external")
-
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW) 
 set(CATCH_BUILD_STATIC_LIBRARY ON)
 set(Catch2_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/Catch2")
 add_subdirectory(${Catch2_SOURCE_DIR})
