@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 #include "hip_test_context.hh"
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #define HIP_PRINT_STATUS(status) INFO(hipGetErrorName(status) << " at line: " << __LINE__);
 
@@ -50,27 +50,26 @@ THE SOFTWARE.
   { REQUIRE((x)); }
 
 #ifdef __cplusplus
-  #include <iostream>
-  #include <iomanip>
-  #include <chrono>
+#include <iostream>
+#include <iomanip>
+#include <chrono>
 #endif
 
 #define HIPCHECK(error)                                                                            \
-    {                                                                                              \
-        hipError_t localError = error;                                                             \
-        if ((localError != hipSuccess) && (localError != hipErrorPeerAccessAlreadyEnabled)) {      \
-            printf("error: '%s'(%d) from %s at %s:%d\n", hipGetErrorString(localError),            \
-                   localError, #error, __FILE__, __LINE__);                                        \
-            abort();                                                                               \
-        }                                                                                          \
-    }
+  {                                                                                                \
+    hipError_t localError = error;                                                                 \
+    if ((localError != hipSuccess) && (localError != hipErrorPeerAccessAlreadyEnabled)) {          \
+      printf("error: '%s'(%d) from %s at %s:%d\n", hipGetErrorString(localError), localError,      \
+             #error, __FILE__, __LINE__);                                                          \
+      abort();                                                                                     \
+    }                                                                                              \
+  }
 
 #define HIPASSERT(condition)                                                                       \
-    if (!(condition)) {                                                                            \
-        printf("assertion %s at %s:%d \n", #condition, __FILE__, __LINE__);                        \
-        abort();                                                                                   \
-    }
-
+  if (!(condition)) {                                                                              \
+    printf("assertion %s at %s:%d \n", #condition, __FILE__, __LINE__);                            \
+    abort();                                                                                       \
+  }
 
 
 // Utility Functions
@@ -83,8 +82,8 @@ static inline int getDeviceCount() {
 
 // Returns the current system time in microseconds
 static inline long long get_time() {
-  return std::chrono::high_resolution_clock::now().time_since_epoch()
-      /std::chrono::microseconds(1);
+  return std::chrono::high_resolution_clock::now().time_since_epoch() /
+      std::chrono::microseconds(1);
 }
 
 static inline double elapsed_time(long long startTimeUs, long long stopTimeUs) {
@@ -104,4 +103,4 @@ static inline unsigned setNumBlocks(unsigned blocksPerCU, unsigned threadsPerBlo
 
   return blocks;
 }
-}
+}  // namespace HipTest

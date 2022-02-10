@@ -40,3 +40,7 @@ endif()
 
 # Add dependency on build_tests to build it on this custom target
 add_dependencies(build_tests UnitDeviceTests)
+
+foreach(X IN LISTS TEST_SRC)
+    catch_executable("${X}")
+endforeach()

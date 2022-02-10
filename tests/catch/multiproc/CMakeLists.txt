@@ -22,3 +22,7 @@ if(UNIX)
     # Add dependency on build_tests to build it on this custom target
     add_dependencies(build_tests MultiProc)
 endif()
+
+foreach(X IN LISTS LINUX_TEST_SRC)
+    catch_executable("${X}")
+endforeach()

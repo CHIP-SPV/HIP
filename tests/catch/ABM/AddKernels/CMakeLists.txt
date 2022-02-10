@@ -8,3 +8,5 @@ add_library(ABMAddKernels SHARED EXCLUDE_FROM_ALL ${TEST_SRC})
 
 # Add dependency on build_tests to build it on this custom target
 add_dependencies(build_tests ABMAddKernels)
+
+catch_executable(${TEST_SRC})

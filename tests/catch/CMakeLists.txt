@@ -47,12 +47,8 @@ if(NOT DEFINED JSON_PARSER)
 endif()
 
 message(STATUS "Searching Catch2 in: ${CMAKE_CURRENT_LIST_DIR}/external")
-find_package(Catch2 REQUIRED
-    PATHS
-        ${CMAKE_CURRENT_LIST_DIR}/external
-    PATH_SUFFIXES
-    Catch2/cmake/Catch2
-)
+
+find_package(Catch2 REQUIRED)
 include(Catch)
 include(CTest)
 
@@ -116,11 +112,36 @@ endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_custom_target(build_tests)
+add_custom_target(build_tests_standalone)
 
 # Tests folder
 if(HIP_PLATFORM STREQUAL "spirv")
     link_libraries(CHIP)
 endif()
+
+function(catch_executable src)
+    get_filename_component(barename ${src} NAME)
+    string(REGEX REPLACE ".cc" "" exec_name ${barename})
+
+    message("Standalone Catch test: ${exec_name} ${src}")
+    add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} ${CMAKE_SOURCE_DIR}/HIP/tests/catch/hipTestMain/hip_test_context.cc) 
+    target_link_libraries(${exec_name} PRIVATE stdc++fs)
+
+     if(HIP_PLATFORM MATCHES "nvidia")
+         target_link_libraries(${exec_name} PRIVATE nvrtc)
+     endif()
+
+    if(HIP_PLATFORM MATCHES "spirv")
+        target_link_libraries(${exec_name} PRIVATE CHIP)
+    endif()
+
+    #add_dependencies(build_tests ${exec_name})
+    add_dependencies(build_tests_standalone ${exec_name})
+
+    target_link_libraries(${exec_name} PRIVATE Catch2::Catch2WithMain)
+    catch_discover_tests(${exec_name} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST") 
+endfunction()
+
 
 add_subdirectory(unit)
 add_subdirectory(ABM)
