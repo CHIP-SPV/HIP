@@ -48,11 +48,12 @@ endif()
 
 message(STATUS "Searching Catch2 in: ${CMAKE_CURRENT_LIST_DIR}/external")
 
-#find_package(Catch2 REQUIRED)
-option(CATCH_BUILD_STATIC_LIBRARY "Builds static library from the main implementation. EXPERIMENTAL" ON)
+set(CATCH_BUILD_STATIC_LIBRARY ON)
 set(Catch2_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/Catch2")
 add_subdirectory(${Catch2_SOURCE_DIR})
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/contrib)
+
+
 include(Catch)
 include(CTest)
 
@@ -143,6 +144,7 @@ function(catch_executable src)
     add_dependencies(build_tests_standalone ${exec_name})
 
     target_link_libraries(${exec_name} PRIVATE Catch2::Catch2WithMain)
+    target_include_directories(${exec_name} PRIVATE ${Catch2_SOURCE_DIR}/include)
     catch_discover_tests(${exec_name} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST") 
 endfunction()
 

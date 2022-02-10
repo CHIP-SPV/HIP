@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 #include "hip_test_context.hh"
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 #define HIP_PRINT_STATUS(status) INFO(hipGetErrorName(status) << " at line: " << __LINE__);
 
