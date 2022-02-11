@@ -56,6 +56,8 @@ TEST_CASE("Unit_deviceFunctions_CompileTest") {
   res = hipMalloc((void**)&Outd, SIZE);
   REQUIRE(res == hipSuccess);
   hipLaunchKernelGGL(floatMath, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0, Ind, Outd);
+  res = hipGetLastError();
+  REQUIRE(res == hipSuccess);
   res = hipDeviceSynchronize();
   REQUIRE(res == hipSuccess);
   res = hipGetLastError();
