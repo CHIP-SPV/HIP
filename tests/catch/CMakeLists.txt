@@ -126,8 +126,7 @@ endif()
 
 function(catch_executable src)
     get_filename_component(barename ${src} NAME)
-    string(REGEX REPLACE ".cc" "" exec_name ${barename})
-    string(REGEX REPLACE ".cpp" "" exec_name ${barename})
+    string(REGEX REPLACE ".cc|.cpp" "" exec_name ${barename})
 
     message("Standalone Catch test: ${exec_name} ${src}")
     add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} ${CMAKE_SOURCE_DIR}/HIP/tests/catch/hipTestMain/hip_test_context.cc) 
