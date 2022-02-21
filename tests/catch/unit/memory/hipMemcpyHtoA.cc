@@ -46,7 +46,7 @@ The same scenario is then verified with pinned host memory
 TEMPLATE_TEST_CASE("Unit_hipMemcpyHtoA_Basic", "[hipMemcpyHtoA]",
                    char, int, float) {
   HIP_CHECK(hipSetDevice(0));
-  auto memtype_check =  GENERATE(0, 1);
+  auto memtype_check =  GENERATE(0);
   hipArray *A_d;
   TestType *hData{nullptr}, *B_h{nullptr};
   size_t width{NUM_W * sizeof(TestType)};
