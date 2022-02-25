@@ -104,7 +104,7 @@ TEMPLATE_TEST_CASE("Unit_hipHostRegister_ReferenceFromKernelandhipMemset",
   // Reference the registered device pointer Ad from inside the kernel:
   for (int i = 0; i < num_devices; i++) {
     HIP_CHECK(hipSetDevice(i));
-    hipLaunchKernelGGL(Inc, dim3(LEN / 512), dim3(512), 0, 0, Ad[i]);
+    hipLaunchKernelGGL(Inc, dim3(LEN / 32), dim3(32), 0, 0, Ad[i]);
     HIP_CHECK(hipDeviceSynchronize());
   }
   REQUIRE(A[10] == 1 + static_cast<TestType>(num_devices));
