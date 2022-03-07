@@ -69,6 +69,24 @@ TEST_CASE("Unit_hipOccupancyMaxPotentialBlockSize_rangeValidation") {
 
 }
 
+#if defined(__HIP_PLATFORM_SPIRV__) && defined(__clang__) && __clang_major__ >= 14
+// This test case is known to fail on clang-14 for SPIR-V
+// target. Building this case fails with the following error message:
+//
+// .../HIP/tests/catch/unit/occupancy/hipO// ccupancyMaxPotentialBlockSize.cc:75:13: error: no matching function for call to 'hipOccupancyMaxPotentialBlockSize'
+//   HIP_CHECK(hipOccupancyMaxPotentialBlockSize<void(*)(int *)>(&gridSize,
+//             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// .../HIP/tests/catch/./include/hip_test_common.hh:31:29: note: expanded from macro 'HIP_CHECK'
+//     hipError_t localError = error;                                                                 \
+//                             ^~~~~
+// .../HIP/include/hip/hip_runtime_api.h:5194:35: note: candidate function template not viable: no overload of 'f2' matching 'void (*)(int *)' for 3rd argument
+// static hipError_t __host__ inline hipOccupancyMaxPotentialBlockSize(int* gridSize, int* blockSize,
+//                                   ^
+// .../HIP/include/hip/hip_runtime_api.h:5252:19: note: candidate function template not viable: no overload of 'f2' matching 'void (*)(int *)' for 3rd argument
+// inline hipError_t hipOccupancyMaxPotentialBlockSize(int* gridSize, int* blockSize, F kernel,
+//                   ^
+#  warning Unit_hipOccupancyMaxPotentialBlockSize_templateInvocation is disabled for clang-14+
+#else
 TEST_CASE("Unit_hipOccupancyMaxPotentialBlockSize_templateInvocation") {
   int gridSize = 0, blockSize = 0;
 
@@ -77,4 +95,4 @@ TEST_CASE("Unit_hipOccupancyMaxPotentialBlockSize_templateInvocation") {
   REQUIRE(gridSize > 0);
   REQUIRE(blockSize > 0);
 }
-
+#endif
