@@ -124,6 +124,12 @@ if(HIP_PLATFORM STREQUAL "spirv")
     link_libraries(CHIP)
 endif()
 
+# A kludge fix for tests that refer files relatively to
+# 'HIP/tests/catch' (=CMAKE_CURRENT_BINARY_DIR). The 'hipTestMain'
+# directory is added to the path because the test driver expects to be
+# run in there and puts '../' prefix to the paths.
+set(TEST_DRIVER_WORKING_DIR "${CMAKE_CURRENT_BINARY_DIR}/hipTestMain")
+
 function(catch_executable src)
     get_filename_component(barename ${src} NAME)
     string(REGEX REPLACE ".cc|.cpp" "" exec_name ${barename})
@@ -145,7 +151,9 @@ function(catch_executable src)
 
     target_link_libraries(${exec_name} PRIVATE Catch2::Catch2WithMain)
     target_include_directories(${exec_name} PRIVATE ${Catch2_SOURCE_DIR}/include)
-    catch_discover_tests(${exec_name} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST") 
+    catch_discover_tests(${exec_name} PROPERTIES
+      WORKING_DIRECTORY "${TEST_DRIVER_WORKING_DIR}"
+      SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
 endfunction()
 
 
