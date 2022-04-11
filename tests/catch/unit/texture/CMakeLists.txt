@@ -31,6 +31,7 @@ hip_add_exe_to_target(NAME TextureTest
                       TEST_SRC ${TEST_SRC}
                       TEST_TARGET_NAME build_tests)
 
-foreach(X IN LISTS TEST_SRC)
-    catch_executable("${X}")
-endforeach()
+# TODO HIP enable texture tests after support merged
+# foreach(X IN LISTS TEST_SRC)
+#     catch_executable("${X}")
+# endforeach()

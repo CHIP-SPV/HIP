@@ -6,6 +6,44 @@ set(CMAKE_CXX_COMPILER_WORKS 1)
 
 project(hiptests)
 
+# function to be called by all tests
+function(hip_add_exe_to_target)
+  set(options)
+  set(args NAME TEST_TARGET_NAME PLATFORM COMPILE_OPTIONS)
+  set(list_args TEST_SRC LINKER_LIBS PROPERTY)
+  cmake_parse_arguments(
+    PARSE_ARGV 0
+    "" # variable prefix
+    "${options}"
+    "${args}"
+    "${list_args}"
+  )
+  # Create shared lib of all tests
+  add_executable(${_NAME} EXCLUDE_FROM_ALL ${_TEST_SRC} $<TARGET_OBJECTS:Main_Object>)
+  catch_discover_tests(${_NAME} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
+  if(UNIX)
+    set(_LINKER_LIBS ${_LINKER_LIBS} stdc++fs)
+  endif()
+  if(DEFINED _LINKER_LIBS)
+    target_link_libraries(${_NAME} ${_LINKER_LIBS})
+  endif()
+
+  # Add dependency on build_tests to build it on this custom target
+  add_dependencies(${_TEST_TARGET_NAME} ${_NAME})
+
+  if (DEFINED _PROPERTY)
+    set_property(TARGET ${_NAME} PROPERTY ${_PROPERTY})
+  endif()
+
+  if (DEFINED _COMPILE_OPTIONS)
+    target_compile_options(${_NAME} PUBLIC ${_COMPILE_OPTIONS})
+  endif()
+
+  foreach(arg IN LISTS _UNPARSED_ARGUMENTS)
+      message(WARNING "Unparsed arguments: ${arg}")
+  endforeach()
+endfunction()
+
 # Check if platform and compiler are set
 if(HIP_PLATFORM STREQUAL "amd")
     if(HIP_COMPILER STREQUAL "nvcc")

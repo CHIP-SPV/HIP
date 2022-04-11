@@ -9,10 +9,6 @@ set(TEST_SRC
     brev.cc
     popc.cc
     ldg.cc
-    syncthreadsand.cc
-    syncthreadscount.cc
-    syncthreadsor.cc
-    threadfence_system.cc
 )
 
 # skipped for windows compiler issue - Illegal instruction detected
