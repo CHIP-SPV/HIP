@@ -3,15 +3,18 @@ set(TEST_SRC
     Unit_hipEvent_Negative.cc
     Unit_hipEvent.cc
     Unit_hipEventElapsedTime.cc
-    Unit_hipEventRecord.cc
-    Unit_hipEventIpc.cc
 )
 
-# Create shared lib of all tests
-add_library(EventTest SHARED EXCLUDE_FROM_ALL ${TEST_SRC})
+# skipped for windows due to duplicate symbols
+if(UNIX)
+    set(TEST_SRC ${TEST_SRC}
+                 Unit_hipEventRecord.cc
+                 Unit_hipEventIpc.cc)
+endif()
 
-# Add dependency on build_tests to build it on this custom target
-add_dependencies(build_tests EventTest)
+hip_add_exe_to_target(NAME EventTest
+                      TEST_SRC ${TEST_SRC}
+                      TEST_TARGET_NAME build_tests)
 
 foreach(X IN LISTS TEST_SRC)
     catch_executable("${X}")

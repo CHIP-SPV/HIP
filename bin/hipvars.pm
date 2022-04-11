@@ -25,9 +25,9 @@ use Getopt::Long;
 use Cwd;
 use File::Basename;
 
-$HIP_BASE_VERSION_MAJOR = "4";
-$HIP_BASE_VERSION_MINOR = "4";
-$HIP_BASE_VERSION_PATCH = "0";
+$HIP_BASE_VERSION_MAJOR = "5";
+$HIP_BASE_VERSION_MINOR = "1";
+$HIP_BASE_VERSION_PATCH = "20531";
 
 #---
 # Function to parse config file
@@ -60,7 +60,7 @@ sub can_run {
     }
 }
 
-$isWindows = $^O eq 'MSWin32';
+$isWindows =  ($^O eq 'MSWin32' or $^O eq 'msys');
 
 #
 # TODO: Fix rpath LDFLAGS settings

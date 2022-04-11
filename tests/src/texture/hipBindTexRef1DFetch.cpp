@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 
 /* HIT_START
- * BUILD: %t %s ../test_common.cpp EXCLUDE_HIP_RUNTIME rocclr
+ * BUILD: %t %s ../test_common.cpp
  * TEST: %t
  * HIT_END
  */
@@ -68,7 +68,7 @@ int runTest() {
     HIPCHECK(hipMalloc(&texBuf, N * sizeof(float)));
     HIPCHECK(hipMalloc(&devBuf, N * sizeof(float)));
     HIPCHECK(hipMemcpy(texBuf, val, N * sizeof(float), hipMemcpyHostToDevice));
-  
+
     tex.addressMode[0] = hipAddressModeClamp;
     tex.addressMode[1] = hipAddressModeClamp;
     tex.filterMode = hipFilterModePoint;

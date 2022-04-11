@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.16.8)
+
+# to skip the simple compiler test
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_CXX_COMPILER_WORKS 1)
+
 project(hiptests)
 
 # Check if platform and compiler are set
@@ -28,6 +33,20 @@ if(NOT DEFINED HIP_PATH)
 endif()
 message(STATUS "HIP Path: ${HIP_PATH}")
 
+# TODO HIP Add support for hipcc
+# if(UNIX)
+#     set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc")
+#     set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc")
+# else()
+#     # using cmake_path as it handles path correctly.
+#     # Set both compilers else windows cmake complains of mismatch
+#     cmake_path(SET CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bat")
+#     cmake_path(SET CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bat")
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --rocm-path=${ROCM_PATH}")
+# endif()
+
+
+# Use Catch2 Submodule instead
 # if(NOT DEFINED CATCH2_PATH)
 #     if(DEFINED ENV{CATCH2_PATH})
 #         set(CATCH2_PATH $ENV{CATCH2_PATH} CACHE STRING "Catch2 Path")
@@ -65,6 +84,8 @@ include_directories(
     ${CHIP_DIR_}/HIP/include  #TODO
     ${CHIP_DIR_}/include # TODO
 )
+
+file(COPY ./hipTestMain/config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/hipTestMain)
 
 if(HIP_PLATFORM MATCHES "amd" AND HIP_COMPILER MATCHES "clang")
     add_compile_options(-Wall -Wextra -pedantic -Werror)
