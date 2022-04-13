@@ -30,7 +30,20 @@ $HIP_BASE_VERSION_MINOR = "1";
 $HIP_BASE_VERSION_PATCH = "20531";
 
 #---
-# Function to parse config file
+# Function to check if a library is present in LD_LIBRARY_PATH
+sub check_ld_library_path {
+    my ($libname) = @_;
+    my $libs = `PATH=$ENV{'PATH'}:/sbin ldconfig -vNX \$(echo $ENV{'LD_LIBRARY_PATH'} | sed 's/:/ /g') 2>/dev/null `;
+    if($libs =~ m/$libname.*/) {
+        return 1;
+    }
+    return 0;
+}
+
+
+
+# #---
+# # Function to parse config file
 sub parse_config_file {
     my ($file, $config) = @_;
     if (open (CONFIG, "$file")) {
@@ -40,7 +53,10 @@ sub parse_config_file {
             $config_line =~ s/^\s*//;
             $config_line =~ s/\s*$//;
             if (($config_line !~ /^#/) && ($config_line ne "")) {
-                my ($name, $value) = split (/=/, $config_line);
+                my $name = $config_line;
+                my $value = $config_line;
+                $name =~ s/=.*//;
+                $value =~ s/$name=//;
                 $$config{$name} = $value;
             }
         }
@@ -81,10 +97,22 @@ if (-e "$HIP_PATH/../bin/rocm_agent_enumerator") {
 }
 $CUDA_PATH=$ENV{'CUDA_PATH'} // '/usr/local/cuda';
 $HSA_PATH=$ENV{'HSA_PATH'} // "$ROCM_PATH/hsa";
+$INTEL_PATH=$ENV{'INTEL_PATH'} // "/opt/oneapi";
+
+#HIP_PLATFORM controls whether to use nvidia or amd platform:
+$HIP_PLATFORM=$ENV{'HIP_PLATFORM'} ;
+
+sub check_exists_command { 
+    my $check = `sh -c 'command -v $_[0]'`; 
+    return $check;
+}
 
 # Windows has a different structure, all binaries are inside hip/bin
 if ($isWindows) {
     $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$HIP_PATH/bin";
+} elsif (defined($HIP_PLATFORM) and $HIP_PLATFORM eq "spirv") {
+    check_exists_command 'clang++' or die "$0 requires clang-14 to be in PATH or HIP_CLANG_PATH to be set\n";
+    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // dirname(`which clang++`);
 } else {
     $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$ROCM_PATH/llvm/bin";
 }
@@ -97,14 +125,14 @@ if (defined $HIP_ROCCLR_HOME) {
     $HIP_INFO_PATH= "$HIP_PATH/lib/.hipInfo"; # use actual file
 }
 #---
-#HIP_PLATFORM controls whether to use nvidia or amd platform:
-$HIP_PLATFORM=$ENV{'HIP_PLATFORM'};
+
 # Read .hipInfo
 my %hipInfo = ();
 parse_config_file("$HIP_INFO_PATH", \%hipInfo);
 # Prioritize Env first, otherwise use the hipInfo config file
 $HIP_COMPILER = $ENV{'HIP_COMPILER'} // $hipInfo{'HIP_COMPILER'} // "clang";
 $HIP_RUNTIME = $ENV{'HIP_RUNTIME'} // $hipInfo{'HIP_RUNTIME'} // "rocclr";
+$HIP_OFFLOAD_ARCH_STR = $hipInfo{'HIP_OFFLOAD_ARCH_STR'};
 
 # If using ROCclr runtime, need to find HIP_ROCCLR_HOME
 if (defined $HIP_RUNTIME and $HIP_RUNTIME eq "rocclr" and !defined $HIP_ROCCLR_HOME) {
@@ -117,7 +145,13 @@ if (defined $HIP_RUNTIME and $HIP_RUNTIME eq "rocclr" and !defined $HIP_ROCCLR_H
 }
 
 if (not defined $HIP_PLATFORM) {
-    if (can_run("$HIP_CLANG_PATH/clang++") or can_run("clang++")) {
+    if($HIP_RUNTIME eq "spirv") {
+        $HIP_PLATFORM = "spirv"
+    }
+    # If Level Zero is present in LD_LIBRARY_PATH, default to CHIP-SPV
+    elsif (check_ld_library_path("libze_loader")) {
+        $HIP_PLATFORM = "spirv";
+    } elsif (can_run("$HIP_CLANG_PATH/clang++") or can_run("clang++")) {
         $HIP_PLATFORM = "amd";
     } elsif (can_run("$CUDA_PATH/bin/nvcc") or can_run("nvcc")) {
         $HIP_PLATFORM = "nvidia";

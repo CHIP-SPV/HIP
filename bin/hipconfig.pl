@@ -37,16 +37,17 @@ BEGIN {
 use lib "$base_dir/";
 use hipvars;
 
-$isWindows      =   $hipvars::isWindows;
-$HIP_RUNTIME    =   $hipvars::HIP_RUNTIME;
-$HIP_PLATFORM   =   $hipvars::HIP_PLATFORM;
-$HIP_COMPILER   =   $hipvars::HIP_COMPILER;
-$HIP_CLANG_PATH =   $hipvars::HIP_CLANG_PATH;
-$CUDA_PATH      =   $hipvars::CUDA_PATH;
-$HIP_PATH       =   $hipvars::HIP_PATH;
-$ROCM_PATH      =   $hipvars::ROCM_PATH;
-$HIP_VERSION    =   $hipvars::HIP_VERSION;
-$HSA_PATH       =   $hipvars::HSA_PATH;
+$isWindows            =   $hipvars::isWindows;
+$HIP_RUNTIME          =   $hipvars::HIP_RUNTIME;
+$HIP_PLATFORM         =   $hipvars::HIP_PLATFORM;
+$HIP_COMPILER         =   $hipvars::HIP_COMPILER;
+$HIP_CLANG_PATH       =   $hipvars::HIP_CLANG_PATH;
+$CUDA_PATH            =   $hipvars::CUDA_PATH;
+$HIP_PATH             =   $hipvars::HIP_PATH;
+$ROCM_PATH            =   $hipvars::ROCM_PATH;
+$HIP_VERSION          =   $hipvars::HIP_VERSION;
+$HSA_PATH             =   $hipvars::HSA_PATH;
+$HIP_OFFLOAD_ARCH_STR =   $hipvars::HIP_OFFLOAD_ARCH_STR;
 
 Getopt::Long::Configure ( qw{bundling no_ignore_case});
 GetOptions(
@@ -64,7 +65,7 @@ GetOptions(
     ,"newline|n" => \$p_newline
 );
 
-if ($HIP_COMPILER eq "clang") {
+if ($HIP_PLATFORM eq "amd" and $HIP_COMPILER eq "clang") {
     $HIP_CLANG_VERSION = "";
     if($isWindows) {
         $HIP_CLANG_VERSION = `\"$HIP_CLANG_PATH/clang++\" --version`;
@@ -86,6 +87,10 @@ if ($HIP_COMPILER eq "clang") {
 }
 if ($HIP_PLATFORM eq "nvidia") {
     $CPP_CONFIG = " -D__HIP_PLATFORM_NVCC__= -D__HIP_PLATFORM_NVIDIA__= -I$HIP_PATH/include -I$CUDA_PATH/include";
+};
+
+if ($HIP_PLATFORM eq "spirv") {
+    $CPP_CONFIG = "$HIP_OFFLOAD_ARCH_STR "
 };
 
 if ($p_help) {

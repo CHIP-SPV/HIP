@@ -50,6 +50,7 @@ mark_as_advanced(HIP_HOST_COMPILATION_CPP)
 
 get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../" REALPATH)
 
+set(HIP_FIND_REQUIRED ON)
 # HIP is supported on Linux only
 if(UNIX AND NOT APPLE AND NOT CYGWIN)
     # Search for HIP installation
@@ -241,7 +242,8 @@ elseif("${HIP_COMPILER}" STREQUAL "clang")
         elseif(DEFINED HIP_PATH)
             set(HIP_CLANG_PATH "${HIP_PATH}/../llvm/bin")
         else()
-            set(HIP_CLANG_PATH "/opt/rocm/llvm/bin")
+            # set(HIP_CLANG_PATH "/opt/rocm/llvm/bin")
+            message(FATAL_ERROR "HIP_CLANG_PATH is not set")
         endif()
     endif()
     #Number of parallel jobs by default is 1
