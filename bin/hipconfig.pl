@@ -48,6 +48,7 @@ $ROCM_PATH            =   $hipvars::ROCM_PATH;
 $HIP_VERSION          =   $hipvars::HIP_VERSION;
 $HSA_PATH             =   $hipvars::HSA_PATH;
 $HIP_OFFLOAD_ARCH_STR =   $hipvars::HIP_OFFLOAD_ARCH_STR;
+$HIP_LINK_OPTIONS     =   $hipvars::HIP_LINK_OPTIONS;
 
 Getopt::Long::Configure ( qw{bundling no_ignore_case});
 GetOptions(

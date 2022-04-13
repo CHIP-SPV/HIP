@@ -34,8 +34,8 @@ use Cwd 'abs_path';
 # Will pass-through options to the target compiler.  The tools calling HIPCC must ensure the compiler
 # options are appropriate for the target compiler.
 
-# Environment variable HIP_PLATFORM is to detect amd/nvidia path:
-# HIP_PLATFORM='nvidia' or HIP_PLATFORM='amd'.
+# Environment variable HIP_PLATFORM is to detect amd/nvidia/spirv path:
+# HIP_PLATFORM='nvidia' or HIP_PLATFORM='amd' or HIP_PLATFORM='spirv'
 # If HIP_PLATFORM is not set hipcc will attempt auto-detect based on if nvcc is found.
 #
 # Other environment variable controls:
@@ -105,6 +105,8 @@ $ROCM_PATH      =   $hipvars::ROCM_PATH;
 $HIP_VERSION    =   $hipvars::HIP_VERSION;
 $HSA_PATH       =   $hipvars::HSA_PATH;
 $HIP_ROCCLR_HOME =   $hipvars::HIP_ROCCLR_HOME;
+$HIP_OFFLOAD_ARCH_STR =   $hipvars::HIP_OFFLOAD_ARCH_STR;
+$HIP_LINK_OPTIONS =   $hipvars::HIP_LINK_OPTIONS;
 
 if ($HIP_PLATFORM eq "amd") {
   # If using ROCclr runtime, need to find HIP_ROCCLR_HOME
@@ -133,6 +135,10 @@ if ($verbose & 0x2) {
     print ("HIP_PLATFORM=$HIP_PLATFORM\n");
     print ("HIP_COMPILER=$HIP_COMPILER\n");
     print ("HIP_RUNTIME=$HIP_RUNTIME\n");
+    print ("HIP_CLANG_PATH=$HIP_CLANG_PATH\n");
+    if (defined $HIP_OFFLOAD_ARCH_STR) {
+        print ("HIP_OFFLOAD_ARCH_STR=$HIP_OFFLOAD_ARCH_STR\n");
+    }
 }
 
 # set if user explicitly requests -stdlib=libc++. (else we default to libstdc++ for better interop with g++):
@@ -218,7 +224,13 @@ if ($HIP_PLATFORM eq "amd") {
     $HIPCFLAGS .= " -isystem $CUDA_PATH/include";
 
     $HIPLDFLAGS = " -Wno-deprecated-gpu-targets -lcuda -lcudart -L$CUDA_PATH/lib64";
-} else {
+} elsif ($HIP_PLATFORM eq 'spirv') {
+    $HIPCC="$HIP_CLANG_PATH/clang++";
+    $HIPCXXFLAGS = "$HIP_OFFLOAD_ARCH_STR";
+    $HIP_INCLUDE_PATH = "$HIP_PATH/include";
+    $HIPLDFLAGS = $HIP_LINK_OPTIONS;
+}
+else {
     printf ("error: unknown HIP_PLATFORM = '$HIP_PLATFORM'");
     printf ("       or HIP_COMPILER = '$HIP_COMPILER'");
     exit (-1);

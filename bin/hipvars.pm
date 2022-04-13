@@ -97,7 +97,6 @@ if (-e "$HIP_PATH/../bin/rocm_agent_enumerator") {
 }
 $CUDA_PATH=$ENV{'CUDA_PATH'} // '/usr/local/cuda';
 $HSA_PATH=$ENV{'HSA_PATH'} // "$ROCM_PATH/hsa";
-$INTEL_PATH=$ENV{'INTEL_PATH'} // "/opt/oneapi";
 
 #HIP_PLATFORM controls whether to use nvidia or amd platform:
 $HIP_PLATFORM=$ENV{'HIP_PLATFORM'} ;
@@ -107,24 +106,11 @@ sub check_exists_command {
     return $check;
 }
 
-# Windows has a different structure, all binaries are inside hip/bin
-if ($isWindows) {
-    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$HIP_PATH/bin";
-} elsif (defined($HIP_PLATFORM) and $HIP_PLATFORM eq "spirv") {
-    check_exists_command 'clang++' or die "$0 requires clang-14 to be in PATH or HIP_CLANG_PATH to be set\n";
-    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // dirname(`which clang++`);
-} else {
-    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$ROCM_PATH/llvm/bin";
-}
-# HIP_ROCCLR_HOME is used by Windows builds
-$HIP_ROCCLR_HOME=$ENV{'HIP_ROCCLR_HOME'};
-
 if (defined $HIP_ROCCLR_HOME) {
     $HIP_INFO_PATH= "$HIP_ROCCLR_HOME/lib/.hipInfo";
 } else {
     $HIP_INFO_PATH= "$HIP_PATH/lib/.hipInfo"; # use actual file
 }
-#---
 
 # Read .hipInfo
 my %hipInfo = ();
@@ -133,6 +119,21 @@ parse_config_file("$HIP_INFO_PATH", \%hipInfo);
 $HIP_COMPILER = $ENV{'HIP_COMPILER'} // $hipInfo{'HIP_COMPILER'} // "clang";
 $HIP_RUNTIME = $ENV{'HIP_RUNTIME'} // $hipInfo{'HIP_RUNTIME'} // "rocclr";
 $HIP_OFFLOAD_ARCH_STR = $hipInfo{'HIP_OFFLOAD_ARCH_STR'};
+$HIP_LINK_OPTIONS = $hipInfo{'HIP_LINK_OPTIONS'};
+
+# Windows has a different structure, all binaries are inside hip/bin
+if ($isWindows) {
+    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$HIP_PATH/bin";
+} elsif ((defined($HIP_PLATFORM) and $HIP_PLATFORM eq "spirv") or $HIP_RUNTIME eq 'spirv') {
+    check_exists_command 'clang++' or die "hipcc: Either HIP_PLATFORM=spirv was set \
+    in the environment or hipcc selected spirv as the HIP_RUNTIME. \
+    Using SPIR-V backend requires clang-14 to be in PATH or HIP_CLANG_PATH to be set\n";
+    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // dirname(`which clang++`);
+} else {
+    $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$ROCM_PATH/llvm/bin";
+}
+# HIP_ROCCLR_HOME is used by Windows builds
+$HIP_ROCCLR_HOME=$ENV{'HIP_ROCCLR_HOME'};
 
 # If using ROCclr runtime, need to find HIP_ROCCLR_HOME
 if (defined $HIP_RUNTIME and $HIP_RUNTIME eq "rocclr" and !defined $HIP_ROCCLR_HOME) {
