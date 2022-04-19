@@ -162,6 +162,7 @@ if (!$printed or $p_full) {
     print "HIP_PLATFORM : ", $HIP_PLATFORM, "\n";
     print "HIP_RUNTIME  : ", $HIP_RUNTIME, "\n";
     print "CPP_CONFIG   : ", $CPP_CONFIG, "\n";
+    print "HIP_LINK_OPTIONS   : ", $HIP_LINK_OPTIONS, "\n";
     if ($HIP_PLATFORM eq "amd")
     {
         print "\n" ;

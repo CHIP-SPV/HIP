@@ -55,6 +55,7 @@ set(HIP_FIND_REQUIRED ON)
 if(UNIX AND NOT APPLE AND NOT CYGWIN)
     # Search for HIP installation
     if(NOT HIP_ROOT_DIR)
+        message("HIP_ROOT_DIR not set")
         # Search in user specified path first
         find_path(
             HIP_ROOT_DIR
@@ -191,6 +192,19 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(HIP_RUNTIME ${_hip_runtime} CACHE STRING "HIP runtime as computed by hipconfig")
         mark_as_advanced(HIP_RUNTIME)
     endif()
+
+    if(HIP_HIPCONFIG_EXECUTABLE AND NOT HIP_CLANG_PATH)
+        # Compute the clang path
+        execute_process(
+            COMMAND ${HIP_HIPCONFIG_EXECUTABLE} --hipclangpath
+            OUTPUT_VARIABLE _hip_clang_path
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+        set(HIP_CLANG_PATH ${_hip_clang_path} CACHE STRING "HIP_CLANG_PATH as computed by hipconfig")
+        mark_as_advanced(HIP_CLANG_PATH)
+        message("HIP_CLANG_PATH is ${HIP_CLANG_PATH}")
+    endif()
+
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -242,6 +256,7 @@ elseif("${HIP_COMPILER}" STREQUAL "clang")
         elseif(DEFINED HIP_PATH)
             set(HIP_CLANG_PATH "${HIP_PATH}/../llvm/bin")
         else()
+            # TODO get this from hipconfig?
             # set(HIP_CLANG_PATH "/opt/rocm/llvm/bin")
             message(FATAL_ERROR "HIP_CLANG_PATH is not set")
         endif()
