@@ -585,6 +585,8 @@ foreach $arg (@ARGV)
                 if ($HIP_PLATFORM eq "amd") {
                     $hasHIP = 1;
                     $toolArgs .= " -x hip";
+                } elsif ($HIP_PLATFORM eq "spirv") {
+                    $hasHIP = 1;
                 } else {
                     $hasCU = 1;
                 }
