@@ -75,14 +75,13 @@ class TestContext {
   std::string current_test;
   std::set<std::string> skip_test;
   std::string json_file_;
-  std::vector<std::string>  platform_list_ = {"amd" , "nvidia"};
-  std::vector<std::string>  os_list_ = {"windows", "linux", "all"};
-  std::vector<std::string>  amd_arch_list_ = {};
+  std::vector<std::string> platform_list_ = {"amd", "nvidia", "spirv"};
+  std::vector<std::string> os_list_ = {"windows", "linux", "all"};
+  std::vector<std::string> amd_arch_list_ = {};
 
   Config config_;
   std::string& getJsonFile();
-  std::string substringFound( std::vector<std::string> list,
-                              std::string filename);
+  std::string substringFound(std::vector<std::string> list, std::string filename);
   void detectOS();
   void detectPlatform();
   void fillConfig();
@@ -104,6 +103,7 @@ class TestContext {
   bool isLinux() const;
   bool isNvidia() const;
   bool isAmd() const;
+  bool isSpirv() const;
   bool skipTest() const;
 
   const std::string& getCurrentTest() const { return current_test; }
