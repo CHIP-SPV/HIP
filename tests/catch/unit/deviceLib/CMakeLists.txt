@@ -43,7 +43,3 @@ elseif(HIP_PLATFORM MATCHES "nvidia")
                       TEST_TARGET_NAME build_tests
                       COMPILE_OPTIONS --Wno-deprecated-declarations)
 endif()
-
-foreach(X IN LISTS TEST_SRC)
-    catch_executable("${X}")
-endforeach()

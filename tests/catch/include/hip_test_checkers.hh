@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 #define TOL 0.001
 
-#define guarantee(cond, str)                                                                        \
-   {                                                                                                \
-     if (!(cond)) {                                                                                 \
-       INFO("guarantee failed: " << str);                                                           \
-       abort();                                                                                     \
-     }                                                                                              \
-   }
+#define guarantee(cond, str)                                                                       \
+  {                                                                                                \
+    if (!(cond)) {                                                                                 \
+      INFO("guarantee failed: " << str);                                                           \
+      abort();                                                                                     \
+    }                                                                                              \
+  }
 
 
 namespace HipTest {
@@ -44,7 +44,7 @@ size_t checkVectors(T* A, T* B, T* Out, size_t N, T (*F)(T a, T b), bool expectM
   size_t mismatchesToPrint = 10;
   for (size_t i = 0; i < N; i++) {
     T expected = F(A[i], B[i]);
-    if (std::abs(Out[i] - expected) > TOL) {
+    if (std::fabs(Out[i] - expected) > TOL) {
       if (mismatchCount == 0) {
         firstMismatch = i;
       }
@@ -72,15 +72,15 @@ size_t checkVectors(T* A, T* B, T* Out, size_t N, T (*F)(T a, T b), bool expectM
 
   return mismatchCount;
 }
-template<typename T> // pointer type
-bool checkArray(T* hData, T* hOutputData, size_t width, size_t height,size_t depth = 1) {
+template <typename T>  // pointer type
+bool checkArray(T* hData, T* hOutputData, size_t width, size_t height, size_t depth = 1) {
   for (size_t i = 0; i < depth; i++) {
     for (size_t j = 0; j < height; j++) {
       for (size_t k = 0; k < width; k++) {
-        int offset = i*width*height + j*width + k;
+        int offset = i * width * height + j * width + k;
         if (hData[offset] != hOutputData[offset]) {
-          INFO("Mismatch at ["  << i << "," << j << "," << k << "]:"
-               << hData[offset] << "----" << hOutputData[offset]);
+          INFO("Mismatch at [" << i << "," << j << "," << k << "]:" << hData[offset] << "----"
+                               << hOutputData[offset]);
           CHECK(false);
           return false;
         }
@@ -119,7 +119,7 @@ template <typename T> void setDefaultData(size_t numElements, T* A_h, T* B_h, T*
       if (A_h) A_h[i] = 3;
       if (B_h) B_h[i] = 4;
       if (C_h) C_h[i] = 5;
-    } else if(std::is_same<T, char>::value || std::is_same<T, unsigned char>::value) {
+    } else if (std::is_same<T, char>::value || std::is_same<T, unsigned char>::value) {
       if (A_h) A_h[i] = 'a';
       if (B_h) B_h[i] = 'b';
       if (C_h) C_h[i] = 'c';
@@ -224,9 +224,7 @@ bool freeArrays(T* A_d, T* B_d, T* C_d, T* A_h, T* B_h, T* C_h, bool usePinnedHo
   return freeArraysForHost(A_h, B_h, C_h, usePinnedHost);
 }
 
-template <typename T>
-unsigned setNumBlocks(T blocksPerCU, T threadsPerBlock,
-    size_t N) {
+template <typename T> unsigned setNumBlocks(T blocksPerCU, T threadsPerBlock, size_t N) {
   int device;
   HIP_CHECK(hipGetDevice(&device));
   hipDeviceProp_t props;

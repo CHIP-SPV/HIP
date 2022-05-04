@@ -13,7 +13,3 @@ elseif(HIP_PLATFORM MATCHES "amd")
                       TEST_SRC ${TEST_SRC}
                       TEST_TARGET_NAME build_tests)
 endif()
-
-foreach(X IN LISTS TEST_SRC)
-    catch_executable("${X}")
-endforeach()
