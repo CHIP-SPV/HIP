@@ -135,8 +135,8 @@ TEST_CASE("Unit_hipHostMalloc_Basic") {
     HIP_CHECK(hipMalloc(reinterpret_cast<void**>(&B_d), SIZE));
     HIP_CHECK(hipMemcpy(B_d, B_h, SIZE, hipMemcpyHostToDevice));
 
-    dim3 dimGrid(LEN / 512, 1, 1);
-    dim3 dimBlock(512, 1, 1);
+    dim3 dimGrid(LEN / 256, 1, 1);
+    dim3 dimBlock(256, 1, 1);
     hipLaunchKernelGGL(HipTest::vectorADD, dimGrid, dimBlock,
                        0, 0, static_cast<const float*>(A_d),
                        static_cast<const float*>(B_d), C_d, LEN);
