@@ -73,11 +73,12 @@ TEMPLATE_TEST_CASE("Unit_hipHostGetFlags_Basic", "", int,
 
     HipTest::setDefaultData<TestType>(LEN, A_h, B_h, C_h);
 
-    dim3 dimGrid(LEN / 512, 1, 1);
-    dim3 dimBlock(512, 1, 1);
+    dim3 dimGrid(LEN / 256, 1, 1);
+    dim3 dimBlock(256, 1, 1);
     hipLaunchKernelGGL(HipTest::vectorADD, dimGrid, dimBlock,
                        0, 0, static_cast<const TestType*>(A_d),
                        static_cast<const TestType*>(B_d), C_d, LEN);
+    HIP_CHECK(hipGetLastError());
 
     HIP_CHECK(hipMemcpy(C_h, C_d, SIZE, hipMemcpyDeviceToHost));
     // Note this really HostToHost not
