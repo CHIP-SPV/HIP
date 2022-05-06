@@ -109,10 +109,9 @@ static bool validateMemoryOnGPU(int gpu, bool concurOnOneGPU = false) {
   HIP_CHECK(hipMemcpy(A_d, A_h, Nbytes, hipMemcpyHostToDevice));
   HIP_CHECK(hipMemcpy(B_d, B_h, Nbytes, hipMemcpyHostToDevice));
 
-  hipLaunchKernelGGL(HipTest::vectorADD, dim3(blocks), dim3(threadsPerBlock),
-                     0, 0, static_cast<const int*>(A_d),
-                     static_cast<const int*>(B_d), C_d, N);
-
+  hipLaunchKernelGGL(HipTest::vectorADD, dim3(blocks), dim3(threadsPerBlock), 0, 0,
+                     static_cast<const int*>(A_d), static_cast<const int*>(B_d), C_d, N);
+  HIP_CHECK(hipGetLastError());
   HIP_CHECK(hipMemcpy(C_h, C_d, Nbytes, hipMemcpyDeviceToHost));
 
   if (!HipTest::checkVectorADD(A_h, B_h, C_h, N)) {
@@ -173,8 +172,7 @@ TEST_CASE("Unit_hipMalloc_ChildConcurrencyDefaultGpu") {
 
     // Wait and get result from child
     pid = wait(&exitStatus);
-    if ((WEXITSTATUS(exitStatus) ==  resFailure) || (pid < 0))
-      TestPassed = false;
+    if ((WEXITSTATUS(exitStatus) == resFailure) || (pid < 0)) TestPassed = false;
   }
 
   REQUIRE(TestPassed == true);

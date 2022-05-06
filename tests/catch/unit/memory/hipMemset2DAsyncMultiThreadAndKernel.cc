@@ -87,6 +87,7 @@ TEST_CASE("Unit_hipMemset2DAsync_WithKernel") {
   for (size_t k = 0; k < ITER; k++) {
     hipLaunchKernelGGL(HipTest::vector_square, dim3(blocks),
                    dim3(threadsPerBlock), 0, stream, B_d, C_d, elements);
+    HIP_CHECK(hipGetLastError());
 
     HIP_CHECK(hipMemset2DAsync(C_d, pitch_C, memsetval, NUM_W, NUM_H, stream));
     HIP_CHECK(hipStreamSynchronize(stream));

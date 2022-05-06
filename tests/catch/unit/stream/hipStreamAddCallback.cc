@@ -87,6 +87,7 @@ bool testStreamCallbackFunctionality(bool isDefault) {
     const unsigned threadsPerBlock = 256;
     hipLaunchKernelGGL((HipTest::vector_square), dim3(blocks), dim3(threadsPerBlock), 0, 0, A_d,
                        C_d, NSize);
+    HIP_CHECK(hipGetLastError());
 
     HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost, 0));
     HIP_CHECK(hipStreamAddCallback(0, Callback, nullptr, 0));
@@ -101,7 +102,7 @@ bool testStreamCallbackFunctionality(bool isDefault) {
     const unsigned threadsPerBlock = 256;
     hipLaunchKernelGGL((HipTest::vector_square), dim3(blocks), dim3(threadsPerBlock), 0, mystream,
                        A_d, C_d, NSize);
-
+    HIP_CHECK(hipGetLastError());
     HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost, mystream));
     HIP_CHECK(hipStreamAddCallback(mystream, Callback, nullptr, 0));
     while (!gcbDone) std::this_thread::sleep_for(std::chrono::microseconds(100000));  // Sleep for 100 ms

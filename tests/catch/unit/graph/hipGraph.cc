@@ -92,10 +92,12 @@ static void hipWithoutGraphs(float* inputVec_h, float* inputVec_d,
     hipLaunchKernelGGL(reduce, dim3(inputSize / THREADS_PER_BLOCK, 1, 1),
                        dim3(THREADS_PER_BLOCK, 1, 1), 0, stream1, inputVec_d,
                        outputVec_d);
+    HIP_CHECK(hipGetLastError());
     HIP_CHECK(hipStreamWaitEvent(stream1, memsetEvent2, 0));
     hipLaunchKernelGGL(reduceFinal, dim3(1, 1, 1),
                                     dim3(THREADS_PER_BLOCK, 1, 1), 0, stream1,
                                     outputVec_d, result_d);
+    HIP_CHECK(hipGetLastError());
     HIP_CHECK(hipMemcpyAsync(&result_h, result_d, sizeof(double),
                                                   hipMemcpyDefault, stream1));
     HIP_CHECK(hipStreamSynchronize(stream1));
@@ -150,9 +152,11 @@ static void hipGraphsUsingStreamCapture(float* inputVec_h, float* inputVec_d,
   hipLaunchKernelGGL(reduce, dim3(inputSize / THREADS_PER_BLOCK, 1, 1),
                      dim3(THREADS_PER_BLOCK, 1, 1), 0, stream1,
                      inputVec_d, outputVec_d);
+  HIP_CHECK(hipGetLastError());
   HIP_CHECK(hipStreamWaitEvent(stream1, memsetEvent2, 0));
   hipLaunchKernelGGL(reduceFinal, dim3(1, 1, 1), dim3(THREADS_PER_BLOCK, 1, 1),
                      0, stream1, outputVec_d, result_d);
+  HIP_CHECK(hipGetLastError());
   HIP_CHECK(hipMemcpyAsync(&result_h, result_d, sizeof(double),
                                                    hipMemcpyDefault, stream1));
   HIP_CHECK(hipStreamEndCapture(stream1, &graph));

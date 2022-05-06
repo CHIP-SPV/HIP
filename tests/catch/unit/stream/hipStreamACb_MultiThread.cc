@@ -124,6 +124,7 @@ TEST_CASE("Unit_hipStreamAddCallback_MultipleThreads") {
 
   hipLaunchKernelGGL((device_function), dim3(blocks), dim3(threadsPerBlock), 0, mystream, C_d, A_d,
                      N);
+  HIP_CHECK(hipGetLastError());
   HIP_CHECK(hipMemcpyAsync(C1_h, C_d, Nbytes, hipMemcpyDeviceToHost, mystream));
 
   std::thread* T = new std::thread[numThreads];

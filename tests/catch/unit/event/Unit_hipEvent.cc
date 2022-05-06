@@ -80,6 +80,7 @@ void test(unsigned testMask, int* C_d, int* C_h, int64_t numElements, hipStream_
     HIP_CHECK(hipEventRecord(start, stream));
     hipLaunchKernelGGL(HipTest::addCountReverse, dim3(blocks), dim3(threadsPerBlock), 0, stream,
                        static_cast<const int*>(C_d), C_h, numElements, count);
+    HIP_CHECK(hipGetLastError());
     HIP_CHECK(hipEventRecord(stop, stream));
 
     if (waitStart) {

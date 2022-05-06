@@ -58,6 +58,7 @@ TEST_CASE("Unit_hipDeviceSynchronize_Functional") {
   }
   for (int i = 0; i < NUM_STREAMS; i++) {
     hipLaunchKernelGGL(HIP_KERNEL_NAME(Iter), dim3(1), dim3(1), 0, stream[i], Ad[i], NUM_ITERS);
+    HIP_CHECK(hipGetLastError());
   }
   for (int i = 0; i < NUM_STREAMS; i++) {
     HIP_CHECK(hipMemcpyAsync(A[i], Ad[i], _SIZE, hipMemcpyDeviceToHost, stream[i]));
