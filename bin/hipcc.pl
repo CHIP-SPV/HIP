@@ -226,7 +226,12 @@ if ($HIP_PLATFORM eq "amd") {
     $HIPLDFLAGS = " -Wno-deprecated-gpu-targets -lcuda -lcudart -L$CUDA_PATH/lib64";
 } elsif ($HIP_PLATFORM eq 'spirv') {
     $HIPCC="$HIP_CLANG_PATH/clang++";
-    $HIPCXXFLAGS = "$HIP_OFFLOAD_ARCH_STR";
+    if (defined $HIP_OFFLOAD_ARCH_STR) {
+        $HIPCXXFLAGS = "$HIP_OFFLOAD_ARCH_STR";
+    } else {
+        printf ("error: undefined HIP_OFFLOAD_ARCH_STR");
+        exit( -1)
+    }
     $HIP_INCLUDE_PATH = "$HIP_PATH/include";
     $HIPLDFLAGS = $HIP_LINK_OPTIONS;
 }
