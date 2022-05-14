@@ -20,7 +20,7 @@ THE SOFTWARE.
 #include <iostream>
 #include <vector>
 constexpr int NN = 1 << 21;
-__global__ void kernel_do_nothing(__attribute__((unused))int a) {
+__global__ void kernel_do_nothing(__attribute__((unused)) int a) {
   // empty kernel
 }
 __global__ void kernel(float* x, float* y, int n) {
@@ -57,6 +57,7 @@ TEST_CASE("Unit_hipMultiStream_sameDevice") {
   HIP_CHECK(hipMemcpy(&x, xd, sizeof(float), hipMemcpyDeviceToHost));
   HIP_CHECK(hipMemcpy(&y, yd, sizeof(float), hipMemcpyDeviceToHost));
   REQUIRE(x == Approx(y));
+  for (auto& stream : streams) HIP_CHECK(hipStreamDestroy(stream));
 }
 
 TEST_CASE("Unit_hipMultiStream_multimeDevice") {
