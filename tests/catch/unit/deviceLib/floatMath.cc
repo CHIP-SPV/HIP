@@ -30,19 +30,26 @@ __global__ void floatMath(float* In, float* Out) {
   Out[tid] = __cosf(In[tid]);
   Out[tid] = __exp10f(Out[tid]);
   Out[tid] = __expf(Out[tid]);
-  Out[tid] = __frsqrt_rn(Out[tid]);
-#if defined OCML_BASIC_ROUNDED_OPERATIONS
-  Out[tid] = __fsqrt_rd(Out[tid]);
-#endif
+
   Out[tid] = __fsqrt_rn(Out[tid]);
 #if defined OCML_BASIC_ROUNDED_OPERATIONS
+  Out[tid] = __fsqrt_rd(Out[tid]);
   Out[tid] = __fsqrt_ru(Out[tid]);
   Out[tid] = __fsqrt_rz(Out[tid]);
 #endif
-  Out[tid] = __log10f(Out[tid]);
-  Out[tid] = __log2f(Out[tid]);
-  Out[tid] = __logf(Out[tid]);
-  Out[tid] = __powf(2.0f, Out[tid]);
+
+  Out[tid] = __frsqrt_rn(Out[tid]);
+#if defined OCML_BASIC_ROUNDED_OPERATIONS
+  Out[tid] = __frsqrt_rd(Out[tid]);
+  Out[tid] = __frsqrt_ru(Out[tid]);
+  Out[tid] = __frsqrt_rz(Out[tid]);
+#endif
+
+   Out[tid] = __log10f(Out[tid]);
+   Out[tid] = __log2f(Out[tid]);
+   Out[tid] = __logf(Out[tid]);
+   // Issue here
+   Out[tid] = __powf(2.0f, Out[tid]);
   __sincosf(Out[tid], &In[tid], &Out[tid]);
   Out[tid] = __sinf(Out[tid]);
   Out[tid] = __cosf(Out[tid]);
