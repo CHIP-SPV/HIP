@@ -3,6 +3,7 @@ set(TEST_SRC
     floatMath.cc
     SPMathFunctions.cc
     DPMathFunctions.cc
+    IntMathFunctions.cc
     anyAll.cc
     ballot.cc
     clz.cc
