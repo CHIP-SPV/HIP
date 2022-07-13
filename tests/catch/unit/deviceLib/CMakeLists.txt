@@ -1,6 +1,8 @@
 # Common Tests - Test independent of all platforms
 set(TEST_SRC
     floatMath.cc
+    SPMathFunctions.cc
+    DPMathFunctions.cc
     anyAll.cc
     ballot.cc
     clz.cc
