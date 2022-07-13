@@ -24,217 +24,50 @@ THE SOFTWARE.
 
 #define LEN 512
 #define SIZE LEN << 2
-//#define RUN_KERNEL(FUNCNAME, FUNC)                                                                 \
 
-#define GENERATE_KERNEL(FUNCNAME, FUNC)                                                            \
-  __global__ void testKernel_##FUNCNAME(float* a) {                                                \
-    int tid = threadIdx.x + blockIdx.x * blockDim.x;                                               \
-    a[tid] = FUNC;                                                                                          \
-  }                                                                                                \
-  TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME) {                                       \
-    float* Outd;                                                                                   \
-    auto res = hipMalloc((void**)&Outd, SIZE);                                                     \
-    REQUIRE(res == hipSuccess);                                                                    \
-    hipLaunchKernelGGL(testKernel_##FUNCNAME, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0, Outd);         \
-    HIP_CHECK(hipGetLastError());                                                                  \
-    res = hipDeviceSynchronize();                                                                  \
-    REQUIRE(res == hipSuccess);                                                                    \
-    res = hipGetLastError();                                                                       \
-    REQUIRE(res == hipSuccess);                                                                    \
-    HIP_CHECK(hipFree(Outd));                                                                      \
-  }
+__global__ void floatMath(float* In, float* Out) {
+  int tid = threadIdx.x + blockIdx.x * blockDim.x;
+  Out[tid] = __cosf(In[tid]);
+  Out[tid] = __exp10f(Out[tid]);
+  Out[tid] = __expf(Out[tid]);
 
+  Out[tid] = __fsqrt_rn(Out[tid]);
+#if defined OCML_BASIC_ROUNDED_OPERATIONS
+  Out[tid] = __fsqrt_rd(Out[tid]);
+  Out[tid] = __fsqrt_ru(Out[tid]);
+  Out[tid] = __fsqrt_rz(Out[tid]);
+#endif
 
-// START Single Precision Mathematical Functions
-// GENERATE_KERNEL(acosf, acosf(1.0f));
-// GENERATE_KERNEL(acoshf, acoshf(1.0f));
-// GENERATE_KERNEL(asinf, asinf(1.0f));
-// GENERATE_KERNEL(asinhf, asinhf(1.0f));
-// GENERATE_KERNEL(atan2f, atan2f(1.0f, 1.0f));
-// GENERATE_KERNEL(atanf, atanf(1.0f));
-// GENERATE_KERNEL(atanhf, atanhf(1.0f));
-// GENERATE_KERNEL(cbrtf, cbrtf(1.0f));
-// GENERATE_KERNEL(ceilf, ceilf(1.0f));
-// GENERATE_KERNEL(copysignf, copysignf(1.0f, 1.0f));
+  Out[tid] = __frsqrt_rn(Out[tid]);
+#if defined OCML_BASIC_ROUNDED_OPERATIONS
+  Out[tid] = __frsqrt_rd(Out[tid]);
+  Out[tid] = __frsqrt_ru(Out[tid]);
+  Out[tid] = __frsqrt_rz(Out[tid]);
+#endif
 
- GENERATE_KERNEL(__cosf, __cosf(1.0f));
-// GENERATE_KERNEL(coshf, coshf(1.0f));
-// GENERATE_KERNEL(cospif, cospif(1.0f));
-// GENERATE_KERNEL(cyl_bessel_i0f, cyl_bessel_i0f(1.0f));
-// GENERATE_KERNEL(cyl_bessel_i1f, cyl_bessel_i1f(1.0f));
-// GENERATE_KERNEL(erfcf, erfcf(1.0f));
-// GENERATE_KERNEL(erfcinvf, erfcinvf(1.0f));
-// GENERATE_KERNEL(erfcxf, erfcxf(1.0f));
-// GENERATE_KERNEL(erff, erff(1.0f));
-// GENERATE_KERNEL(erfinvf, erfinvf(1.0f));
-// GENERATE_KERNEL(exp10f, exp10f(1.0f));
-// GENERATE_KERNEL(exp2f, exp2f(1.0f));
-// GENERATE_KERNEL(expf, expf(1.0f));
-// GENERATE_KERNEL(expm1f, expm1f(1.0f));
-// GENERATE_KERNEL(fabsf, fabsf(1.0f));
-// GENERATE_KERNEL(fdimf, fdimf(1.0f, 1.0f));
-// GENERATE_KERNEL(fdividef, fdividef(1.0f, 1.0f));
-// GENERATE_KERNEL(floorf, floorf(1.0f));
-// GENERATE_KERNEL(fmaf, fmaf(1.0f, 1.0f, 1.0f));
-// GENERATE_KERNEL(fmaxf, fmaxf(1.0f, 1.0f));
-// GENERATE_KERNEL(fminf, fminf(1.0f, 1.0f));
-// GENERATE_KERNEL(fmodf, fmodf(1.0f, 1.0f));
-// GENERATE_KERNEL(frexpf, frexpf(1.0f, reinterpret_cast<int*>(a)));
-// GENERATE_KERNEL(hypotf, hypotf(1.0f, 1.0f));
-// GENERATE_KERNEL(ilogbf, ilogbf(1.0f));
-// GENERATE_KERNEL(isfinite, isfinite(1.0f));
-// GENERATE_KERNEL(isinf, isinf(1.0f));
-//GENERATE_KERNEL(isnan, isnan(1.0f));
+   Out[tid] = __log10f(Out[tid]);
+   Out[tid] = __log2f(Out[tid]);
+   Out[tid] = __logf(Out[tid]);
+   // Issue here
+   Out[tid] = __powf(2.0f, Out[tid]);
+  __sincosf(Out[tid], &In[tid], &Out[tid]);
+  Out[tid] = __sinf(Out[tid]);
+  Out[tid] = __cosf(Out[tid]);
+  Out[tid] = __tanf(Out[tid]);
+}
 
- /**
- Enalbing this test makes all tests fail assertions
- PROBLEMO GENERATE_KERNEL(j0f, j0f(1.0f));
- PROBLEMO GENERATE_KERNEL(j1f, j1f(1.0f));
- PROBLEMO GENERATE_KERNEL(jnf, jnf(1, 1.0f));
- */
-
-// GENERATE_KERNEL(ldexpf, ldexpf(1.0f, 1));
-
-//GENERATE_KERNEL(lgammaf, lgammaf(1.0f));
-// GENERATE_KERNEL(llrintf, llrintf(1.0f));
-// GENERATE_KERNEL(llroundf, llroundf(1.0f));
-
-// GENERATE_KERNEL(log10f, log10f(1.0f));
-// GENERATE_KERNEL(log1pf, log1pf(1.0f));
-// GENERATE_KERNEL(log2f, log2f(1.0f));
-// GENERATE_KERNEL(logbf, logbf(1.0f));
-// GENERATE_KERNEL(logf, logf(1.0f));
-
-// GENERATE_KERNEL(lrintf, lrintf(1.0f));
-// GENERATE_KERNEL(lroundf, lroundf(1.0f));
-// GENERATE_KERNEL(max, max(1.0f, 1.0f));
-// GENERATE_KERNEL(min, min(1.0f, 1.0f));
-// GENERATE_KERNEL(modff, modff(1.0f, a));
-// GENERATE_KERNEL(nanf, nanf(const_cast<char*>(reinterpret_cast<char*>(a))));
-// GENERATE_KERNEL(nearbyintf, nearbyintf(1.0f));
-// GENERATE_KERNEL(nextafterf, nextafterf(1.0f, 2.0f));
-// GENERATE_KERNEL(norm3df, norm3df(1.0f, 2.0f, 3.0f));
-// GENERATE_KERNEL(norm4df, norm4df(1.0f, 2.0f, 3.0f, 4.0f));
-// GENERATE_KERNEL(normcdff, normcdff(1.0f));
-// GENERATE_KERNEL(normcdfinvf, normcdfinvf(1.0f));
-// GENERATE_KERNEL(normf, normf(1, const_cast<float*>(a)));
-// GENERATE_KERNEL(powf, powf(1.0f, 2.0f));
-// GENERATE_KERNEL(rcbrtf, rcbrtf(1.0f));
-// GENERATE_KERNEL(remainderf, remainderf(1.0f, 2.0f));
-// GENERATE_KERNEL(remquof, remquof(1.0f, 2.0f, reinterpret_cast<int*>(a)));
-// GENERATE_KERNEL(rhypotf, rhypotf(1.0f, 2.0f));
-// GENERATE_KERNEL(rintf, rintf(1.0f));
-// GENERATE_KERNEL(rnorm3df, rnorm3df(1.0f, 2.0f, 3.0f));
-// GENERATE_KERNEL(rnorm4df, rnorm4df(1.0f, 2.0f, 3.0f, 4.0f));
-// GENERATE_KERNEL(rnormf, rnormf(1, const_cast<float*>(a)));
-// GENERATE_KERNEL(roundf, roundf(1.0f));
-// GENERATE_KERNEL(rsqrtf, rsqrtf(1.0f));
-// GENERATE_KERNEL(scalblnf, scalblnf(1.0f, 1));
-// GENERATE_KERNEL(scalbnf, scalbnf(1.0f, 1));
-// GENERATE_KERNEL(signbit, signbit(1.0f));
-// // //GENERATE_KERNEL(sincosf, sincosf(1.0f, a, a));
-// // //GENERATE_KERNEL(sincospif, sincospif(1.0f, a, a));
-// GENERATE_KERNEL(sinf, sinf(1.0f));
-// GENERATE_KERNEL(sinhf, sinhf(1.0f));
-// GENERATE_KERNEL(sinpif, sinpif(1.0f));
-// GENERATE_KERNEL(sqrtf, sqrtf(1.0f));
-// GENERATE_KERNEL(tanf, tanf(1.0f));
-// GENERATE_KERNEL(tanhf, tanhf(1.0f));
-// GENERATE_KERNEL(tgammaf, tgammaf(1.0f));
-// GENERATE_KERNEL(truncf, truncf(1.0f));
-// GENERATE_KERNEL(y0f, y0f(1.0f));
-// GENERATE_KERNEL(y1f, y1f(1.0f));
-// GENERATE_KERNEL(ynf, ynf(1, 1.0f));
-
-// TEST_CASE("Unit_deviceFunctions_CompileTest") {
-//   RUN_KERNEL(acosf, acosf(1.0f));
-//   RUN_KERNEL(acoshf, acoshf(1.0f));
-//   RUN_KERNEL(asinf, asinf(1.0f));
-//   RUN_KERNEL(asinhf, asinhf(1.0f));
-//   RUN_KERNEL(atan2f, atan2f(1.0f, 1.0f));
-//   RUN_KERNEL(atanf, atanf(1.0f));
-//   RUN_KERNEL(atanhf, atanhf(1.0f));
-//   RUN_KERNEL(cbrtf, cbrtf(1.0f));
-//   RUN_KERNEL(ceilf, ceilf(1.0f));
-//   RUN_KERNEL(copysignf, copysignf(1.0f, 1.0f));
-//   RUN_KERNEL(cosf, cosf(1.0f));
-//   RUN_KERNEL(coshf, coshf(1.0f));
-//   RUN_KERNEL(cospif, cospif(1.0f));
-//   RUN_KERNEL(cyl_bessel_i0f, cyl_bessel_i0f(1.0f));
-//   RUN_KERNEL(cyl_bessel_i1f, cyl_bessel_i1f(1.0f));
-//   RUN_KERNEL(erfcf, erfcf(1.0f));
-//   RUN_KERNEL(erfcinvf, erfcinvf(1.0f));
-//   RUN_KERNEL(erfcxf, erfcxf(1.0f));
-//   RUN_KERNEL(erff, erff(1.0f));
-//   RUN_KERNEL(erfinvf, erfinvf(1.0f));
-//   RUN_KERNEL(exp10f, exp10f(1.0f));
-//   RUN_KERNEL(exp2f, exp2f(1.0f));
-//   RUN_KERNEL(expf, expf(1.0f));
-//   RUN_KERNEL(expm1f, expm1f(1.0f));
-//   RUN_KERNEL(fabsf, fabsf(1.0f));
-//   RUN_KERNEL(fdimf, fdimf(1.0f, 1.0f));
-//   RUN_KERNEL(fdividef, fdividef(1.0f, 1.0f));
-//   RUN_KERNEL(floorf, floorf(1.0f));
-//   RUN_KERNEL(fmaf, fmaf(1.0f, 1.0f, 1.0f));
-//   RUN_KERNEL(fmaxf, fmaxf(1.0f, 1.0f));
-//   RUN_KERNEL(fminf, fminf(1.0f, 1.0f));
-//   RUN_KERNEL(fmodf, fmodf(1.0f, 1.0f));
-//   RUN_KERNEL(frexpf, frexpf(1.0f, reinterpret_cast<int*>(a)));
-//   RUN_KERNEL(hypotf, hypotf(1.0f, 1.0f));
-//   RUN_KERNEL(ilogbf, ilogbf(1.0f));
-//   RUN_KERNEL(isfinite, isfinite(1.0f));
-//   RUN_KERNEL(isinf, isinf(1.0f));
-//   RUN_KERNEL(isnan, isnan(1.0f));
-//   RUN_KERNEL(j0f, j0f(1.0f));
-//   RUN_KERNEL(j1f, j1f(1.0f));
-//   RUN_KERNEL(jnf, jnf(1, 1.0f));
-//   RUN_KERNEL(ldexpf, ldexpf(1.0f, 1));
-//   RUN_KERNEL(lgammaf, lgammaf(1.0f));
-//   RUN_KERNEL(llrintf, llrintf(1.0f));
-//   RUN_KERNEL(llroundf, llroundf(1.0f));
-//   RUN_KERNEL(log10f, log10f(1.0f));
-//   RUN_KERNEL(log1pf, log1pf(1.0f));
-//   RUN_KERNEL(log2f, log2f(1.0f));
-//   RUN_KERNEL(logbf, logbf(1.0f));
-//   RUN_KERNEL(logf, logf(1.0f));
-//   RUN_KERNEL(lrintf, lrintf(1.0f));
-//   RUN_KERNEL(lroundf, lroundf(1.0f));
-//   RUN_KERNEL(max, max(1.0f, 1.0f));
-//   RUN_KERNEL(min, min(1.0f, 1.0f));
-//   RUN_KERNEL(modff, modff(1.0f, a));
-//   RUN_KERNEL(nanf, nanf(const_cast<char*>(reinterpret_cast<char*>(a))));
-//   RUN_KERNEL(nearbyintf, nearbyintf(1.0f));
-//   RUN_KERNEL(nextafterf, nextafterf(1.0f, 2.0f));
-//   RUN_KERNEL(norm3df, norm3df(1.0f, 2.0f, 3.0f));
-//   RUN_KERNEL(norm4df, norm4df(1.0f, 2.0f, 3.0f, 4.0f));
-//   RUN_KERNEL(normcdff, normcdff(1.0f));
-//   RUN_KERNEL(normcdfinvf, normcdfinvf(1.0f));
-//   RUN_KERNEL(normf, normf(1, const_cast<float*>(a)));
-//   RUN_KERNEL(powf, powf(1.0f, 2.0f));
-//   RUN_KERNEL(rcbrtf, rcbrtf(1.0f));
-//   RUN_KERNEL(remainderf, remainderf(1.0f, 2.0f));
-//   RUN_KERNEL(remquof, remquof(1.0f, 2.0f, reinterpret_cast<int*>(a)));
-//   RUN_KERNEL(rhypotf, rhypotf(1.0f, 2.0f));
-//   RUN_KERNEL(rintf, rintf(1.0f));
-//   RUN_KERNEL(rnorm3df, rnorm3df(1.0f, 2.0f, 3.0f));
-//   RUN_KERNEL(rnorm4df, rnorm4df(1.0f, 2.0f, 3.0f, 4.0f));
-//   RUN_KERNEL(rnormf, rnormf(1, const_cast<float*>(a)));
-//   RUN_KERNEL(roundf, roundf(1.0f));
-//   RUN_KERNEL(rsqrtf, rsqrtf(1.0f));
-//   RUN_KERNEL(scalblnf, scalblnf(1.0f, 1));
-//   RUN_KERNEL(scalbnf, scalbnf(1.0f, 1));
-//   RUN_KERNEL(signbit, signbit(1.0f));
-//   RUN_KERNEL(sincosf, sincosf(1.0f, a, a));
-//   RUN_KERNEL(sincospif, sincospif(1.0f, a, a));
-//   RUN_KERNEL(sinf, sinf(1.0f));
-//   RUN_KERNEL(sinhf, sinhf(1.0f));
-//   RUN_KERNEL(sinpif, sinpif(1.0f));
-//   RUN_KERNEL(sqrtf, sqrtf(1.0f));
-//   RUN_KERNEL(tanf, tanf(1.0f));
-//   RUN_KERNEL(tanhf, tanhf(1.0f));
-//   RUN_KERNEL(tgammaf, tgammaf(1.0f));
-//   RUN_KERNEL(truncf, truncf(1.0f));
-//   RUN_KERNEL(y0f, y0f(1.0f));
-//   RUN_KERNEL(y1f, y1f(1.0f));
-//   RUN_KERNEL(ynf, ynf(1, 1.0f));
-// }
+TEST_CASE("Unit_deviceFunctions_CompileTest") {
+  float *Ind, *Outd;
+  auto res = hipMalloc((void**)&Ind, SIZE);
+  REQUIRE(res == hipSuccess);
+  res = hipMalloc((void**)&Outd, SIZE);
+  REQUIRE(res == hipSuccess);
+  hipLaunchKernelGGL(floatMath, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0, Ind, Outd);
+  HIP_CHECK(hipGetLastError());
+  res = hipDeviceSynchronize();
+  REQUIRE(res == hipSuccess);
+  res = hipGetLastError();
+  REQUIRE(res == hipSuccess);
+  HIP_CHECK(hipFree(Ind));
+  HIP_CHECK(hipFree(Outd));
+}
