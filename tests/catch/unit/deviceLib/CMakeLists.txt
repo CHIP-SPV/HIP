@@ -4,6 +4,8 @@ set(TEST_SRC
     SPMathFunctions.cc
     DPMathFunctions.cc
     IntMathFunctions.cc
+    SPIntrinsics.cc
+    DPIntrinsics.cc
     anyAll.cc
     ballot.cc
     clz.cc
