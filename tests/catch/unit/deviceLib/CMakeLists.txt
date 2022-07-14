@@ -13,10 +13,10 @@ set(TEST_SRC
 
 add_subdirectory(SinglePrecisionIntrinsics)
 add_subdirectory(DoublePrecisionIntrinsics)
+add_subdirectory(IntegerIntrinsics)
 
 add_subdirectory(SinglePrecisionMathFunctions)
 add_subdirectory(DoublePrecisionMathFunctions)
-
 add_subdirectory(IntegerMathFunctions)
 
 # skipped for windows compiler issue - Illegal instruction detected
