@@ -1,8 +1,6 @@
 # Common Tests - Test independent of all platforms
 set(TEST_SRC
     floatMath.cc
-    DPMathFunctions.cc
-    IntMathFunctions.cc
     anyAll.cc
     ballot.cc
     clz.cc
@@ -17,6 +15,9 @@ add_subdirectory(SinglePrecisionIntrinsics)
 add_subdirectory(DoublePrecisionIntrinsics)
 
 add_subdirectory(SinglePrecisionMathFunctions)
+add_subdirectory(DoublePrecisionMathFunctions)
+
+add_subdirectory(IntegerMathFunctions)
 
 # skipped for windows compiler issue - Illegal instruction detected
 if(UNIX)
