@@ -4,8 +4,6 @@ set(TEST_SRC
     SPMathFunctions.cc
     DPMathFunctions.cc
     IntMathFunctions.cc
-    SPIntrinsics.cc
-    DPIntrinsics.cc
     anyAll.cc
     ballot.cc
     clz.cc
@@ -15,6 +13,9 @@ set(TEST_SRC
     popc.cc
     ldg.cc
 )
+
+add_subdirectory(DoublePrecisionIntrinsics)
+add_subdirectory(SinglePrecisionIntrinsics)
 
 # skipped for windows compiler issue - Illegal instruction detected
 if(UNIX)

@@ -113,10 +113,11 @@ GENERATE_KERNEL(abs, abs(1));
 GENERATE_KERNEL(labs, labs(1l));
 GENERATE_KERNEL(llabs, llabs(1ll));
 
-TEST_CASE("Unit_deviceFunctions_CompileTest_Intmax") {
+TEST_CASE("Unit_deviceFunctions_CompileTest_int") {
   int* Outd;
   auto res = hipMalloc((void**)&Outd, SIZE);
   REQUIRE(res == hipSuccess);
+  SECTION("max")
   hipLaunchKernelGGL(testKernel_max, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0, Outd);
   HIP_CHECK(hipGetLastError());
   res = hipDeviceSynchronize();
@@ -126,10 +127,11 @@ TEST_CASE("Unit_deviceFunctions_CompileTest_Intmax") {
   HIP_CHECK(hipFree(Outd));
 }
 
-TEST_CASE("Unit_deviceFunctions_CompileTest_Intmin") {
+TEST_CASE("Unit_deviceFunctions_CompileTest_int") {
   int* Outd;
   auto res = hipMalloc((void**)&Outd, SIZE);
   REQUIRE(res == hipSuccess);
+  SECTION("min")
   hipLaunchKernelGGL(testKernel_min, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0, Outd);
   HIP_CHECK(hipGetLastError());
   res = hipDeviceSynchronize();

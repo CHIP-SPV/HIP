@@ -1,0 +1,22 @@
+# Common Tests - Test independent of all platforms
+file(GLOB TEST_SRC
+  *.cc
+)
+
+if(HIP_PLATFORM MATCHES "amd")
+    set(TEST_SRC ${TEST_SRC} ${AMD_TEST_SRC})
+    set_source_files_properties(floatTM.cc PROPERTIES COMPILE_FLAGS -std=c++17)
+    hip_add_exe_to_target(NAME SinglePrecisionIntrinsicsTets
+        TEST_SRC ${TEST_SRC}
+        TEST_TARGET_NAME build_tests)
+elseif(HIP_PLATFORM MATCHES "nvidia")
+    hip_add_exe_to_target(NAME SinglePrecisionIntrinsicsTets
+        TEST_SRC ${TEST_SRC}
+        TEST_TARGET_NAME build_tests
+        COMPILE_OPTIONS --Wno-deprecated-declarations)
+elseif(HIP_PLATFORM MATCHES "spirv")
+    hip_add_exe_to_target(NAME SinglePrecisionIntrinsicsTets
+        TEST_SRC ${TEST_SRC}
+        TEST_TARGET_NAME build_tests
+        COMPILE_OPTIONS --Wno-deprecated-declarations)
+endif()
