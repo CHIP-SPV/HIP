@@ -38,7 +38,7 @@ THE SOFTWARE.
 #elif (defined(__HIP_PLATFORM_CLANG__) || defined(__HIP_PLATFORM_SPIRV__)) &&                      \
     !(defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)) &&                           \
     !(defined(__HIP_PLATFORM_NVCC__) || defined(__HIP_PLATFORM_NVIDIA__))
-#include <hip/spirv_hip_mathlib.hh>
+#include <hip/spirv_hip_devicelib.hh>
 // TODO Check this?
 
 #else
