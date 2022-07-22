@@ -125,9 +125,7 @@ $HIP_LINK_OPTIONS = $hipInfo{'HIP_LINK_OPTIONS'};
 if ($isWindows) {
     $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$HIP_PATH/bin";
 } elsif ((defined($HIP_PLATFORM) and $HIP_PLATFORM eq "spirv") or $HIP_RUNTIME eq 'spirv') {
-    check_exists_command 'clang++' or die "hipcc: Either HIP_PLATFORM=spirv was set \
-    in the environment or hipcc selected spirv as the HIP_RUNTIME. \
-    Using SPIR-V backend requires clang-14 to be in PATH or HIP_CLANG_PATH to be set\n";
+    can_run("$ENV{'HIP_CLANG_PATH'}/clang++") or can_run("clang++") or die "hipcc: clang++ not found. Please add clang++ to PATH or set HIP_CLANG_PATH\n";
     $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // dirname(`which clang++`);
 } else {
     $HIP_CLANG_PATH=$ENV{'HIP_CLANG_PATH'} // "$ROCM_PATH/llvm/bin";
