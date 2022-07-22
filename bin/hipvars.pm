@@ -131,7 +131,7 @@ if ($isWindows) {
         # print "HIP_CLANG_PATH is set. found clang ${HIP_CLANG_PATH}/clang++\n";
     } else {
         can_run("clang++") or die "hipcc: clang++ not found. Please add clang++ to PATH or set HIP_CLANG_PATH\n";
-        $HIP_CLANG_PATH=`which clang++`;
+        $HIP_CLANG_PATH=dirname(`which clang++`);
         # print "HIP_CLANG_PATH is not set. Using PATH. clang++ found at ${HIP_CLANG_PATH} \n";
     }
 
