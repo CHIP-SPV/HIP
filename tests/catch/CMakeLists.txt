@@ -131,8 +131,8 @@ include_directories(
     "./include"
     ${HIP_PATH}/include
     ${JSON_PARSER}
-    ${CHIP_DIR_}/HIP/include  #TODO
-    ${CHIP_DIR_}/include # TODO
+    ${CHIP_SRC_DIR}/HIP/include  #TODO
+    ${CHIP_SRC_DIR}/include # TODO
 )
 
 file(COPY ./hipTestMain/config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/hipTestMain)
