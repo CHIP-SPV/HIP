@@ -118,7 +118,7 @@ parse_config_file("$HIP_INFO_PATH", \%hipInfo);
 # Prioritize Env first, otherwise use the hipInfo config file
 $HIP_COMPILER = $ENV{'HIP_COMPILER'} // $hipInfo{'HIP_COMPILER'} // "clang";
 $HIP_RUNTIME = $ENV{'HIP_RUNTIME'} // $hipInfo{'HIP_RUNTIME'} // "rocclr";
-$HIP_OFFLOAD_ARCH_STR = $hipInfo{'HIP_OFFLOAD_ARCH_STR'};
+$HIP_OFFLOAD_COMPILE_OPTIONS = $hipInfo{'HIP_OFFLOAD_COMPILE_OPTIONS'};
 $HIP_LINK_OPTIONS = $hipInfo{'HIP_LINK_OPTIONS'};
 
 # Windows has a different structure, all binaries are inside hip/bin

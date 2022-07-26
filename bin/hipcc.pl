@@ -105,7 +105,7 @@ $ROCM_PATH      =   $hipvars::ROCM_PATH;
 $HIP_VERSION    =   $hipvars::HIP_VERSION;
 $HSA_PATH       =   $hipvars::HSA_PATH;
 $HIP_ROCCLR_HOME =   $hipvars::HIP_ROCCLR_HOME;
-$HIP_OFFLOAD_ARCH_STR =   $hipvars::HIP_OFFLOAD_ARCH_STR;
+$HIP_OFFLOAD_COMPILE_OPTIONS =   $hipvars::HIP_OFFLOAD_COMPILE_OPTIONS;
 $HIP_LINK_OPTIONS =   $hipvars::HIP_LINK_OPTIONS;
 
 if ($HIP_PLATFORM eq "amd") {
@@ -136,8 +136,8 @@ if ($verbose & 0x2) {
     print ("HIP_COMPILER=$HIP_COMPILER\n");
     print ("HIP_RUNTIME=$HIP_RUNTIME\n");
     print ("HIP_CLANG_PATH=$HIP_CLANG_PATH\n");
-    if (defined $HIP_OFFLOAD_ARCH_STR) {
-        print ("HIP_OFFLOAD_ARCH_STR=$HIP_OFFLOAD_ARCH_STR\n");
+    if (defined $HIP_OFFLOAD_COMPILE_OPTIONS) {
+        print ("HIP_OFFLOAD_COMPILE_OPTIONS=$HIP_OFFLOAD_COMPILE_OPTIONS\n");
     }
 }
 
@@ -226,10 +226,10 @@ if ($HIP_PLATFORM eq "amd") {
     $HIPLDFLAGS = " -Wno-deprecated-gpu-targets -lcuda -lcudart -L$CUDA_PATH/lib64";
 } elsif ($HIP_PLATFORM eq 'spirv') {
     $HIPCC="$HIP_CLANG_PATH/clang++";
-    if (defined $HIP_OFFLOAD_ARCH_STR) {
-        $HIPCXXFLAGS = "$HIP_OFFLOAD_ARCH_STR";
+    if (defined $HIP_OFFLOAD_COMPILE_OPTIONS) {
+        $HIPCXXFLAGS = "$HIP_OFFLOAD_COMPILE_OPTIONS";
     } else {
-        printf ("error: undefined HIP_OFFLOAD_ARCH_STR");
+        printf ("error: undefined HIP_OFFLOAD_COMPILE_OPTIONS");
         exit( -1)
     }
     $HIP_INCLUDE_PATH = "$HIP_PATH/include";

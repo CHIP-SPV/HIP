@@ -47,7 +47,7 @@ $HIP_PATH             =   $hipvars::HIP_PATH;
 $ROCM_PATH            =   $hipvars::ROCM_PATH;
 $HIP_VERSION          =   $hipvars::HIP_VERSION;
 $HSA_PATH             =   $hipvars::HSA_PATH;
-$HIP_OFFLOAD_ARCH_STR =   $hipvars::HIP_OFFLOAD_ARCH_STR;
+$HIP_OFFLOAD_COMPILE_OPTIONS =   $hipvars::HIP_OFFLOAD_COMPILE_OPTIONS;
 $HIP_LINK_OPTIONS     =   $hipvars::HIP_LINK_OPTIONS;
 
 Getopt::Long::Configure ( qw{bundling no_ignore_case});
@@ -91,7 +91,7 @@ if ($HIP_PLATFORM eq "nvidia") {
 };
 
 if ($HIP_PLATFORM eq "spirv") {
-    $CPP_CONFIG = "$HIP_OFFLOAD_ARCH_STR "
+    $CPP_CONFIG = "$HIP_OFFLOAD_COMPILE_OPTIONS "
 };
 
 if ($p_help) {
