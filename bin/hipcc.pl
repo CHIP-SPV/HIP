@@ -232,8 +232,14 @@ if ($HIP_PLATFORM eq "amd") {
         printf ("error: undefined HIP_OFFLOAD_COMPILE_OPTIONS");
         exit( -1)
     }
+
+    if (defined $HIP_OFFLOAD_LINK_OPTIONS) {
+        $HIPLDFLAGS = "$HIP_OFFLOAD_LINK_OPTIONS";
+    } else {
+        printf ("error: undefined HIP_OFFLOAD_LINK_OPTIONS");
+        exit( -1)
+    }
     $HIP_INCLUDE_PATH = "$HIP_PATH/include";
-    $HIPLDFLAGS = $HIP_OFFLOAD_LINK_OPTIONS;
 }
 else {
     printf ("error: unknown HIP_PLATFORM = '$HIP_PLATFORM'");
