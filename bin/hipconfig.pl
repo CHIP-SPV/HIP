@@ -48,7 +48,7 @@ $ROCM_PATH            =   $hipvars::ROCM_PATH;
 $HIP_VERSION          =   $hipvars::HIP_VERSION;
 $HSA_PATH             =   $hipvars::HSA_PATH;
 $HIP_OFFLOAD_COMPILE_OPTIONS =   $hipvars::HIP_OFFLOAD_COMPILE_OPTIONS;
-$HIP_LINK_OPTIONS     =   $hipvars::HIP_LINK_OPTIONS;
+$HIP_OFFLOAD_LINK_OPTIONS     =   $hipvars::HIP_OFFLOAD_LINK_OPTIONS;
 
 Getopt::Long::Configure ( qw{bundling no_ignore_case});
 GetOptions(
@@ -162,7 +162,7 @@ if (!$printed or $p_full) {
     print "HIP_PLATFORM : ", $HIP_PLATFORM, "\n";
     print "HIP_RUNTIME  : ", $HIP_RUNTIME, "\n";
     print "CPP_CONFIG   : ", $CPP_CONFIG, "\n";
-    print "HIP_LINK_OPTIONS   : ", $HIP_LINK_OPTIONS, "\n";
+    print "HIP_OFFLOAD_LINK_OPTIONS   : ", $HIP_OFFLOAD_LINK_OPTIONS, "\n";
     if ($HIP_PLATFORM eq "amd")
     {
         print "\n" ;

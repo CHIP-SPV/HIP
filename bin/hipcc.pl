@@ -106,7 +106,7 @@ $HIP_VERSION    =   $hipvars::HIP_VERSION;
 $HSA_PATH       =   $hipvars::HSA_PATH;
 $HIP_ROCCLR_HOME =   $hipvars::HIP_ROCCLR_HOME;
 $HIP_OFFLOAD_COMPILE_OPTIONS =   $hipvars::HIP_OFFLOAD_COMPILE_OPTIONS;
-$HIP_LINK_OPTIONS =   $hipvars::HIP_LINK_OPTIONS;
+$HIP_OFFLOAD_LINK_OPTIONS =   $hipvars::HIP_OFFLOAD_LINK_OPTIONS;
 
 if ($HIP_PLATFORM eq "amd") {
   # If using ROCclr runtime, need to find HIP_ROCCLR_HOME
@@ -233,7 +233,7 @@ if ($HIP_PLATFORM eq "amd") {
         exit( -1)
     }
     $HIP_INCLUDE_PATH = "$HIP_PATH/include";
-    $HIPLDFLAGS = $HIP_LINK_OPTIONS;
+    $HIPLDFLAGS = $HIP_OFFLOAD_LINK_OPTIONS;
 }
 else {
     printf ("error: unknown HIP_PLATFORM = '$HIP_PLATFORM'");

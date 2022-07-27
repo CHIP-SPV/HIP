@@ -120,7 +120,7 @@ $HIP_COMPILER = $ENV{'HIP_COMPILER'} // $hipInfo{'HIP_COMPILER'} // "clang";
 $HIP_RUNTIME = $ENV{'HIP_RUNTIME'} // $hipInfo{'HIP_RUNTIME'} // "rocclr";
 $HIP_ARCH = $ENV{'HIP_ARCH'} // $hipInfo{'HIP_ARCH'} // "rocclr";
 $HIP_OFFLOAD_COMPILE_OPTIONS = $hipInfo{'HIP_OFFLOAD_COMPILE_OPTIONS'};
-$HIP_LINK_OPTIONS = $hipInfo{'HIP_LINK_OPTIONS'};
+$HIP_OFFLOAD_LINK_OPTIONS = $hipInfo{'HIP_OFFLOAD_LINK_OPTIONS'};
 
 # Windows has a different structure, all binaries are inside hip/bin
 if ($isWindows) {
