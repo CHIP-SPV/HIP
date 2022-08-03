@@ -190,11 +190,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_custom_target(build_tests)
 add_custom_target(build_tests_standalone)
 
-# Tests folder
-if(HIP_PLATFORM STREQUAL "spirv")
-    link_libraries(CHIP)
-endif()
-
 # A kludge fix for tests that refer files relatively to
 # 'HIP/tests/catch' (=CMAKE_CURRENT_BINARY_DIR). The 'hipTestMain'
 # directory is added to the path because the test driver expects to be
@@ -209,12 +204,10 @@ function(catch_executable src)
     add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} ${CMAKE_SOURCE_DIR}/HIP/tests/catch/hipTestMain/hip_test_context.cc) 
     target_link_libraries(${exec_name} PRIVATE stdc++fs)
 
-     if(HIP_PLATFORM MATCHES "nvidia")
+    if(HIP_PLATFORM MATCHES "nvidia")
          target_link_libraries(${exec_name} PRIVATE nvrtc)
-     endif()
-
-    if(HIP_PLATFORM MATCHES "spirv")
-        target_link_libraries(${exec_name} PRIVATE CHIP)
+    elseif(HIP_PLATFORM MATCHES "spirv")
+        target_link_libraries(${exec_name} PRIVATE deviceInternal)
     endif()
 
     #add_dependencies(build_tests ${exec_name})
