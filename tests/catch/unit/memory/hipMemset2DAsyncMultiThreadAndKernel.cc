@@ -32,8 +32,8 @@
 /* Defines */
 #define NUM_THREADS 1000
 #define ITER 10
-#define NUM_H 256
-#define NUM_W 256
+#define NUM_H 128
+#define NUM_W 128
 
 
 

@@ -61,7 +61,7 @@ TEST_CASE("Unit_hipMultiStream_sameDevice") {
 }
 
 TEST_CASE("Unit_hipMultiStream_multimeDevice") {
-  constexpr int nLoops = 50000;
+  constexpr int nLoops = 1000;
   constexpr int nStreams = 2;
   std::vector<hipStream_t> streams(nStreams);
   int nGpu = 0;
@@ -90,7 +90,7 @@ TEST_CASE("Unit_hipMultiStream_multimeDevice") {
     }
     // Sync stream 1
     HIP_CHECK(hipStreamSynchronize(streams[0]));
-    if (k % 10000 == 0 || k == nLoops) {
+    if (k % 100 == 0 || k == nLoops) {
       INFO("Iter: " << k);
     }
   }
