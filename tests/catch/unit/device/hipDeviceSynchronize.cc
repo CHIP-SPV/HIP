@@ -25,9 +25,9 @@ THE SOFTWARE.
 
 #include <hip_test_common.hh>
 
-#define _SIZE sizeof(int) * 1024 * 1024
-#define NUM_STREAMS 2
-#define NUM_ITERS 1 << 30
+#define _SIZE sizeof(int) * 256 * 256
+#define NUM_STREAMS 1
+#define NUM_ITERS 1 << 20
 
 static __global__ void Iter(int* Ad, int num) {
   int tx = threadIdx.x + blockIdx.x * blockDim.x;
