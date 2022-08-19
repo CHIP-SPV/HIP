@@ -772,6 +772,7 @@ typedef struct ihipModuleSymbol_t* hipFunction_t;
 // Stream per thread
 /** Implicit stream per application thread.*/
 #define hipStreamPerThread ((hipStream_t)2)
+#define hipStreamLegacy ((hipStream_t)3)
 /*
  * @brief HIP Memory Advise values
  * @enum
