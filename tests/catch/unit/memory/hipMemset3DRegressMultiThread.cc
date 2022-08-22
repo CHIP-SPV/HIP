@@ -75,7 +75,7 @@ static __global__ void func_set_value(hipPitchedPtr devicePitchedPointer,
 static void threadFunc(hipStream_t stream, hipPitchedPtr devpPtr,
       int memsetval, int testval, hipExtent extent, hipMemcpy3DParms myparms) {
   // Kernel Launch Configuration
-  constexpr auto size = 8;
+  constexpr auto size = 4;
   dim3 threadsPerBlock = dim3(size, size, size);
   dim3 blocks;
   blocks = dim3((extent.width + threadsPerBlock.x - 1) / threadsPerBlock.x,
