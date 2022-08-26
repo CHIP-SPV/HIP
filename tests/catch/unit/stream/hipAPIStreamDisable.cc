@@ -28,7 +28,7 @@ __global__ void kernel(float* x, float* y, int n) {
   int tid = threadIdx.x;
   if (tid < 1) {
     for (int i = 0; i < n; i++) {
-      x[i] = sqrt(powf(3.14159, i));
+      x[i] = sqrtf(powf(3.14159, i));
     }
     y[tid] = y[tid] + 1.0f;
   }
