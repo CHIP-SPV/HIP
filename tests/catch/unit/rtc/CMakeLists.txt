@@ -12,4 +12,8 @@ elseif(HIP_PLATFORM MATCHES "amd")
   hip_add_exe_to_target(NAME RTC
                       TEST_SRC ${TEST_SRC}
                       TEST_TARGET_NAME build_tests)
+else()
+  hip_add_exe_to_target(NAME RTC
+                        TEST_SRC ${TEST_SRC}
+                        TEST_TARGET_NAME build_tests)
 endif()
