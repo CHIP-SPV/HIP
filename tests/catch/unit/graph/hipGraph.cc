@@ -27,7 +27,7 @@ Testcase Scenarios :
 
 #include <hip_test_common.hh>
 
-#define THREADS_PER_BLOCK 512
+#define THREADS_PER_BLOCK 256
 #define GRAPH_LAUNCH_ITERATIONS 1000
 
 static __global__ void reduce(float* d_in, double* d_out) {
@@ -328,13 +328,13 @@ TEST_CASE("Unit_hipGraph_BasicFunctional") {
   HIP_CHECK(hipMalloc(&result_d, sizeof(double)));
   init_input(inputVec_h, size);
 
-  SECTION("Execution Without HIPGraphs") {
-    hipWithoutGraphs(inputVec_h, inputVec_d, outputVec_d,
+  SECTION("Manual HIPGraph") {
+    hipGraphsManual(inputVec_h, inputVec_d, outputVec_d,
                                                     result_d, size, maxBlocks);
   }
 
-  SECTION("Manual HIPGraph") {
-    hipGraphsManual(inputVec_h, inputVec_d, outputVec_d,
+  SECTION("Execution Without HIPGraphs") {
+    hipWithoutGraphs(inputVec_h, inputVec_d, outputVec_d,
                                                     result_d, size, maxBlocks);
   }
 
