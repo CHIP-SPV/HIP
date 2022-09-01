@@ -62,7 +62,7 @@ static void hipTestWithGraph() {
 
   hipStreamBeginCapture(stream, hipStreamCaptureModeGlobal);
   for (int ikrnl = 0; ikrnl < NKERNEL; ikrnl++) {
-    simpleKernel<<<dim3(N / 512, 1, 1), dim3(512, 1, 1),
+    simpleKernel<<<dim3(N / 256, 1, 1), dim3(256, 1, 1),
                                              0, stream>>>(out_d, in_d);
   }
   hipStreamEndCapture(stream, &graph);
@@ -122,7 +122,7 @@ static void hipTestWithoutGraph() {
   auto start = std::chrono::high_resolution_clock::now();
   for (int istep = 0; istep < NSTEP; istep++) {
     for (int ikrnl = 0; ikrnl < NKERNEL; ikrnl++) {
-      simpleKernel<<<dim3(N / 512, 1, 1), dim3(512, 1, 1),
+      simpleKernel<<<dim3(N / 256, 1, 1), dim3(256, 1, 1),
                                                    0, stream>>>(out_d, in_d);
     }
     HIP_CHECK(hipStreamSynchronize(stream));
