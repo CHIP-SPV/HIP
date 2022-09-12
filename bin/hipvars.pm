@@ -109,7 +109,7 @@ sub check_exists_command {
 if (defined $HIP_ROCCLR_HOME) {
     $HIP_INFO_PATH= "$HIP_ROCCLR_HOME/lib/.hipInfo";
 } else {
-    $HIP_INFO_PATH= "$HIP_PATH/lib/.hipInfo"; # use actual file
+    $HIP_INFO_PATH= "$HIP_PATH/bin/.hipInfo"; # use actual file
 }
 
 # Read .hipInfo
