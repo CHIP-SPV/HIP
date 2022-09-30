@@ -28,7 +28,6 @@ This testfile verifies the following scenarios of all hipMemcpy API
 */
 static constexpr auto NUM_ELM{1024};
 static constexpr auto NUM_THREADS{5};
-static auto Available_Gpus{0};
 static constexpr auto MAX_GPU{256};
 
 enum apiToTest {TEST_MEMCPY, TEST_MEMCPYH2D, TEST_MEMCPYD2H, TEST_MEMCPYD2D,
@@ -76,6 +75,7 @@ memcpyTests<T>::memcpyTests(apiToTest val) {
 
 template <typename T>
 void memcpyTests<T>::Memcpy_And_verify(bool *ret_val) {
+  int Available_Gpus;
   HIPCHECK(hipGetDeviceCount(&Available_Gpus));
   T *A_d[MAX_GPU];
   hipStream_t stream[MAX_GPU];
