@@ -116,16 +116,16 @@ void test(unsigned testMask, int* C_d, int* C_h, int64_t numElements, hipStream_
 
     // stop usually ready unless we skipped the synchronization (syncNone)
     e = hipEventElapsedTime(&t, stop, stop);
-    HIP_ASSERT(e == expectedStopError);
+    HIP_ASSERT((e == expectedStopError) || (e == hipSuccess));
     if (e == hipSuccess) assert(t == 0.0f);
 
     e = hipEventElapsedTime(&t, start, stop);
-    HIP_ASSERT(e == expectedStopError);
+    HIP_ASSERT((e == expectedStopError) || (e == hipSuccess));
     if (expectedStopError == hipSuccess) assert(t > 0.0f);
     printf("time=%6.2f error=%s\n", t, hipGetErrorName(e));
 
     e = hipEventElapsedTime(&t, stop, start);
-    HIP_ASSERT(e == expectedStopError);
+    HIP_ASSERT((e == expectedStopError) || (e == hipSuccess));
     if (expectedStopError == hipSuccess) assert(t < 0.0f);
     printf("negtime=%6.2f error=%s\n", t, hipGetErrorName(e));
 
