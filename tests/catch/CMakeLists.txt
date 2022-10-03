@@ -83,28 +83,14 @@ if(NOT DEFINED HIP_PATH)
 endif()
 message(STATUS "HIP Path: ${HIP_PATH}")
 
-# TODO HIP Add support for hipcc
-# if(UNIX)
-#     set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc")
-#     set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc")
-# else()
-#     # using cmake_path as it handles path correctly.
-#     # Set both compilers else windows cmake complains of mismatch
-#     cmake_path(SET CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bat")
-#     cmake_path(SET CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bat")
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --rocm-path=${ROCM_PATH}")
-# endif()
-
-
-# Use Catch2 Submodule instead
-# if(NOT DEFINED CATCH2_PATH)
-#     if(DEFINED ENV{CATCH2_PATH})
-#         set(CATCH2_PATH $ENV{CATCH2_PATH} CACHE STRING "Catch2 Path")
-#     else()
-#         set(CATCH2_PATH "${CMAKE_CURRENT_LIST_DIR}/external/Catch2")
-#     endif()
-# endif()
-# message(STATUS "Catch2 Path: ${CATCH2_PATH}")
+if(NOT DEFINED CATCH2_PATH)
+    if(DEFINED ENV{CATCH2_PATH})
+        set(CATCH2_PATH $ENV{CATCH2_PATH} CACHE STRING "Catch2 Path")
+    else()
+        set(CATCH2_PATH "${CMAKE_CURRENT_LIST_DIR}/external/Catch2")
+    endif()
+endif()
+message(STATUS "Catch2 Path: ${CATCH2_PATH}")
 
 # Set JSON Parser path
 if(NOT DEFINED JSON_PARSER)
@@ -116,13 +102,8 @@ if(NOT DEFINED JSON_PARSER)
 endif()
 
 message(STATUS "Searching Catch2 in: ${CMAKE_CURRENT_LIST_DIR}/external")
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW) 
-set(CATCH_BUILD_STATIC_LIBRARY ON)
-set(Catch2_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/Catch2")
-add_subdirectory(${Catch2_SOURCE_DIR})
-list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/contrib)
 
-
+find_package(Catch2 REQUIRED)
 include(Catch)
 include(CTest)
 
@@ -141,10 +122,10 @@ if(HIP_PLATFORM MATCHES "amd" AND HIP_COMPILER MATCHES "clang")
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-# cmake_policy(PUSH)
-# if(POLICY CMP0037)
-#     cmake_policy(SET CMP0037 OLD)
-# endif()
+cmake_policy(PUSH)
+if(POLICY CMP0037)
+    cmake_policy(SET CMP0037 OLD)
+endif()
 
 # Turn off CMAKE_HIP_ARCHITECTURES Feature if cmake version is 3.21+
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.21.0)
@@ -231,4 +212,4 @@ add_subdirectory(stress)
 #     add_subdirectory(multiproc)
 # endif()
 
-# cmake_policy(POP)
+cmake_policy(POP)
