@@ -5,7 +5,6 @@ file(GLOB TEST_SRC
 
 if(HIP_PLATFORM MATCHES "amd")
     set(TEST_SRC ${TEST_SRC} ${AMD_TEST_SRC})
-    set_source_files_properties(floatTM.cc PROPERTIES COMPILE_FLAGS -std=c++17)
     hip_add_exe_to_target(NAME SinglePrecisionIntrinsicsTets
         TEST_SRC ${TEST_SRC}
         TEST_TARGET_NAME build_tests)
@@ -19,4 +18,6 @@ elseif(HIP_PLATFORM MATCHES "spirv")
         TEST_SRC ${TEST_SRC}
         TEST_TARGET_NAME build_tests
         COMPILE_OPTIONS --Wno-deprecated-declarations)
+else()
+    message(FATAL_ERROR "HIP_PLATFORM must be either amd, nvidia, or spirv")
 endif()

@@ -7,54 +7,7 @@ set(CMAKE_CXX_COMPILER_WORKS 1)
 project(hiptests)
 
 # function to be called by all tests
-function(hip_add_exe_to_target)
-  set(options)
-  set(args NAME TEST_TARGET_NAME PLATFORM COMPILE_OPTIONS)
-  set(list_args TEST_SRC LINKER_LIBS PROPERTY)
-  cmake_parse_arguments(
-    PARSE_ARGV 0
-    "" # variable prefix
-    "${options}"
-    "${args}"
-    "${list_args}"
-  )
 
-  # If using CHIP-SPV, build tests as standlone for now
-  list(LENGTH TEST_SRC LEN)
-  MATH(EXPR LEN "${LEN}-1")
-  if(HIP_PLATFORM MATCHES "spirv")
-    foreach(X RANGE ${LEN})
-      list(GET TEST_SRC ${X} SRC_NAME)
-      catch_executable("${SRC_NAME}")
-    endforeach()
-  else()
-    # Create shared lib of all tests
-    add_executable(${_NAME} EXCLUDE_FROM_ALL ${_TEST_SRC} $<TARGET_OBJECTS:Main_Object>)
-    catch_discover_tests(${_NAME} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
-    if(UNIX)
-      set(_LINKER_LIBS ${_LINKER_LIBS} stdc++fs)
-    endif()
-    if(DEFINED _LINKER_LIBS)
-      target_link_libraries(${_NAME} ${_LINKER_LIBS})
-    endif()
-
-    # Add dependency on build_tests to build it on this custom target
-    add_dependencies(${_TEST_TARGET_NAME} ${_NAME})
-
-    if (DEFINED _PROPERTY)
-      set_property(TARGET ${_NAME} PROPERTY ${_PROPERTY})
-    endif()
-
-    if (DEFINED _COMPILE_OPTIONS)
-      target_compile_options(${_NAME} PUBLIC ${_COMPILE_OPTIONS})
-    endif()
-
-    foreach(arg IN LISTS _UNPARSED_ARGUMENTS)
-        message(WARNING "Unparsed arguments: ${arg}")
-    endforeach()
-
-  endif()
-endfunction()
 
 # Check if platform and compiler are set
 if(HIP_PLATFORM STREQUAL "amd")
@@ -101,9 +54,7 @@ if(NOT DEFINED JSON_PARSER)
     endif()
 endif()
 
-message(STATUS "Searching Catch2 in: ${CMAKE_CURRENT_LIST_DIR}/external")
-
-find_package(Catch2 REQUIRED)
+find_package(Catch2 PATHS ${CMAKE_SOURCE_DIR}/HIP/tests/catch/external/Catch2/cmake/Catch2 REQUIRED)
 include(Catch)
 include(CTest)
 
@@ -112,8 +63,6 @@ include_directories(
     "./include"
     ${HIP_PATH}/include
     ${JSON_PARSER}
-    ${CHIP_SRC_DIR}/HIP/include  #TODO
-    ${CHIP_SRC_DIR}/include # TODO
 )
 
 file(COPY ./hipTestMain/config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/hipTestMain)
@@ -182,7 +131,7 @@ function(catch_executable src)
     string(REGEX REPLACE ".cc|.cpp" "" exec_name ${barename})
 
     message("Standalone Catch test: ${exec_name} ${src}")
-    add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} ${CMAKE_SOURCE_DIR}/HIP/tests/catch/hipTestMain/hip_test_context.cc) 
+    add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} $<TARGET_OBJECTS:Main_Object>) 
     target_link_libraries(${exec_name} PRIVATE stdc++fs)
 
     if(HIP_PLATFORM MATCHES "nvidia")
@@ -194,7 +143,8 @@ function(catch_executable src)
     #add_dependencies(build_tests ${exec_name})
     add_dependencies(build_tests_standalone ${exec_name})
 
-    target_link_libraries(${exec_name} PRIVATE Catch2::Catch2WithMain)
+    #add_executable(${_NAME} EXCLUDE_FROM_ALL ${_TEST_SRC} $<TARGET_OBJECTS:Main_Object>)
+    #target_link_libraries(${exec_name} PRIVATE Catch2::Catch2)
     target_include_directories(${exec_name} PRIVATE ${Catch2_SOURCE_DIR}/include)
     catch_discover_tests(${exec_name} PROPERTIES
       WORKING_DIRECTORY "${TEST_DRIVER_WORKING_DIR}"

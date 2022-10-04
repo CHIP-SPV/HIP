@@ -30,5 +30,6 @@ else()
 endif()
 
 if(HIP_PLATFORM MATCHES "spirv")
-    target_link_libraries(Main_Object PRIVATE CHIP)
+    target_compile_options(Main_Object PRIVATE ${HIP_OFFLOAD_COMPILE_OPTIONS_BUILD_})
+    target_link_libraries(Main_Object PUBLIC CHIP)
 endif()
