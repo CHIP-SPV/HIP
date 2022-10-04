@@ -118,7 +118,6 @@ endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_custom_target(build_tests)
-add_custom_target(build_tests_standalone)
 
 # A kludge fix for tests that refer files relatively to
 # 'HIP/tests/catch' (=CMAKE_CURRENT_BINARY_DIR). The 'hipTestMain'
@@ -140,11 +139,8 @@ function(catch_executable src)
         target_link_libraries(${exec_name} PRIVATE deviceInternal)
     endif()
 
-    #add_dependencies(build_tests ${exec_name})
-    add_dependencies(build_tests_standalone ${exec_name})
+    add_dependencies(build_tests ${exec_name})
 
-    #add_executable(${_NAME} EXCLUDE_FROM_ALL ${_TEST_SRC} $<TARGET_OBJECTS:Main_Object>)
-    #target_link_libraries(${exec_name} PRIVATE Catch2::Catch2)
     target_include_directories(${exec_name} PRIVATE ${Catch2_SOURCE_DIR}/include)
     catch_discover_tests(${exec_name} PROPERTIES
       WORKING_DIRECTORY "${TEST_DRIVER_WORKING_DIR}"
