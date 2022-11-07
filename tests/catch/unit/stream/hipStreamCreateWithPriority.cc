@@ -219,6 +219,7 @@ void queueTasksInStreams(std::vector<hipStream_t> *stream,
   for (int idx = 0; idx < arrsize; idx++) {
     for (int idy = 0; idy < MEMCPYSIZE2; idy++) {
       A_h[idx][idy] = initVal;
+      C_h[idx][idy] = 0;
     }
   }
   // Launch task on each stream
