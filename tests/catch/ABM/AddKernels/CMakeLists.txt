@@ -2,7 +2,11 @@
 set(TEST_SRC
     add.cc
 )
-
-hip_add_exe_to_target(NAME ABMAddKernels
-                      TEST_SRC ${TEST_SRC}
+hip_add_exe_to_target(NAME add
+                      TEST_SRC add.cc
                       TEST_TARGET_NAME build_tests)
+# foreach(exe_name ${TEST_SRC})
+#     hip_add_exe_to_target(NAME ${exe_name}
+#                       TEST_SRC ${exe_name}
+#                       TEST_TARGET_NAME build_tests)
+# endforeach()
