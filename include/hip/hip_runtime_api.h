@@ -4494,6 +4494,7 @@ int hipGetStreamDeviceId(hipStream_t stream);
  *  This section describes the graph management types & functions of HIP runtime API.
  */
 
+#ifndef __HIP_PLATFORM_SPIRV__
 /**
  * An opaque value that represents a hip graph
  */
@@ -4502,11 +4503,13 @@ typedef struct ihipGraph* hipGraph_t;
  * An opaque value that represents a hip graph node
  */
 typedef struct hipGraphNode* hipGraphNode_t;
+
 /**
  * An opaque value that represents a hip graph Exec
  */
 typedef struct hipGraphExec* hipGraphExec_t;
 
+#endif
 /**
  * @brief hipGraphNodeType
  * @enum
