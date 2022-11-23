@@ -338,10 +338,10 @@ TEST_CASE("Unit_hipGraph_BasicFunctional") {
                                                     result_d, size, maxBlocks);
   }
 
-  // SECTION("HIPGraphs Using StreamCapture") {
-  //   hipGraphsUsingStreamCapture(inputVec_h, inputVec_d,
-  //                                      outputVec_d, result_d, size, maxBlocks);
-  // }
+  SECTION("HIPGraphs Using StreamCapture") {
+    hipGraphsUsingStreamCapture(inputVec_h, inputVec_d,
+                                       outputVec_d, result_d, size, maxBlocks);
+  }
 
   HIP_CHECK(hipFree(inputVec_d));
   HIP_CHECK(hipFree(outputVec_d));
