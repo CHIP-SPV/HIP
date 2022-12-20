@@ -61,7 +61,6 @@ include(CTest)
 include_directories(
     ${CATCH2_PATH}
     "./include"
-    ${HIP_PATH}/include
     ${JSON_PARSER}
 )
 
