@@ -27,8 +27,8 @@ Testcase Scenarios :
 
 #include <hip_test_common.hh>
 
-#define THREADS_PER_BLOCK 512
-#define GRAPH_LAUNCH_ITERATIONS 1000
+#define THREADS_PER_BLOCK 256
+#define GRAPH_LAUNCH_ITERATIONS 1
 
 static __global__ void reduce(float* d_in, double* d_out) {
   int myId = threadIdx.x + blockDim.x * blockIdx.x;
