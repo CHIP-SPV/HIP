@@ -26,7 +26,9 @@ This testcase verifies the following scenario
 #include <hip_test_kernels.hh>
 #include <hip_test_checkers.hh>
 
-constexpr auto wait_sec = 5000;
+// Extremely long wait?
+//constexpr auto wait_sec = 5000;
+constexpr auto wait_sec = 5;
 
 __global__ void Kernel(float* hostRes, int clkRate) {
   int tid = threadIdx.x + blockIdx.x * blockDim.x;

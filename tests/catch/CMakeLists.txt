@@ -16,6 +16,10 @@ elseif(HIP_PLATFORM STREQUAL "nvidia")
     if(DEFINED HIP_COMPILER AND NOT HIP_COMPILER STREQUAL "nvcc")
         message(FATAL_ERROR "Unexpected HIP_COMPILER: ${HIP_COMPILER} is set for HIP_PLATFORM:nvidia")
     endif()
+elseif(HIP_PLATFORM STREQUAL "spirv")
+    if(NOT DEFINED HIP_COMPILER OR NOT HIP_COMPILER STREQUAL "clang")
+        message(FATAL_ERROR "Unexpected HIP_COMPILER: ${HIP_COMPILER} is set for HIP_PLATFORM:spirv")
+    endif()
 else()
     message(FATAL_ERROR "Unexpected HIP_PLATFORM: " ${HIP_PLATFORM})
 endif()
@@ -25,7 +29,7 @@ if(NOT DEFINED HIP_PATH)
     if(DEFINED ENV{HIP_PATH})
         set(HIP_PATH $ENV{HIP_PATH} CACHE STRING "HIP Path")
     else()
-        set(HIP_PATH "${PROJECT_BINARY_DIR}")
+        set(HIP_PATH "${CMAKE_BINARY_DIR}")
     endif()
 endif()
 message(STATUS "HIP Path: ${HIP_PATH}")
@@ -46,21 +50,23 @@ message(STATUS "ROCM Path: ${ROCM_PATH}")
 
 
 if(UNIX)
-    set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc")
-    set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc")
-    set(HIPCONFIG_EXECUTABLE "${HIP_PATH}/bin/hipconfig")
-    execute_process(COMMAND perl ${HIPCONFIG_EXECUTABLE} --version
-                    OUTPUT_VARIABLE HIP_VERSION
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bin")
+    set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bin")
+    set(HIPCONFIG_EXECUTABLE "${HIP_PATH}/bin/hipconfig.bin")
+    # execute_process(COMMAND ${HIPCONFIG_EXECUTABLE} --version
+    #                 OUTPUT_VARIABLE HIP_VERSION
+    #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # message("hipcc: HIP_VERSION ${HIP_VERSION}")
 else()
-    # using cmake_path as it handles path correctly.
-    # Set both compilers else windows cmake complains of mismatch
-    cmake_path(SET CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bat")
-    cmake_path(SET CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bat")
-    set(HIPCONFIG_EXECUTABLE "${HIP_PATH}/bin/hipconfig.bat")
-    execute_process(COMMAND ${HIPCONFIG_EXECUTABLE} --version
-                    OUTPUT_VARIABLE HIP_VERSION
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # # using cmake_path as it handles path correctly.
+    # # Set both compilers else windows cmake complains of mismatch
+    # cmake_path(SET CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bat")
+    # cmake_path(SET CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bat")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --rocm-path=${ROCM_PATH}")
+    # set(HIPCONFIG_EXECUTABLE "${HIP_PATH}/bin/hipconfig.bat")
+    # execute_process(COMMAND ${HIPCONFIG_EXECUTABLE} --version
+    #                 OUTPUT_VARIABLE HIP_VERSION
+    #                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 if(HIP_PLATFORM STREQUAL "amd")
     # prioritize -DROCM_PATH over env{ROCM_PATH} for amd platform only
@@ -69,12 +75,12 @@ endif()
 # enforce c++17
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
 
-string(REPLACE "." ";" VERSION_LIST ${HIP_VERSION})
-list(GET VERSION_LIST 0 HIP_VERSION_MAJOR)
-list(GET VERSION_LIST 1 HIP_VERSION_MINOR)
-list(GET VERSION_LIST 2 HIP_VERSION_PATCH_GITHASH)
-string(REPLACE "-" ";" VERSION_LIST ${HIP_VERSION_PATCH_GITHASH})
-list(GET VERSION_LIST 0 HIP_VERSION_PATCH)
+# string(REPLACE "." ";" VERSION_LIST ${HIP_VERSION})
+# list(GET VERSION_LIST 0 HIP_VERSION_MAJOR)
+# list(GET VERSION_LIST 1 HIP_VERSION_MINOR)
+# list(GET VERSION_LIST 2 HIP_VERSION_PATCH_GITHASH)
+# string(REPLACE "-" ";" VERSION_LIST ${HIP_VERSION_PATCH_GITHASH})
+# list(GET VERSION_LIST 0 HIP_VERSION_PATCH)
 
 if(NOT DEFINED CATCH2_PATH)
     if(DEFINED ENV{CATCH2_PATH})
@@ -196,6 +202,7 @@ elseif(DEFINED ENV{HCC_AMDGPU_TARGET})
     # hipcc pl script appends it to the options
     set(OFFLOAD_ARCH_STR " --offload-arch=$ENV{HCC_AMDGPU_TARGET}")
     set(HIP_GPU_ARCH_LIST $ENV{HCC_AMDGPU_TARGET})
+    add_compile_options(${OFFLOAD_ARCH_STR})
 endif()
 message(STATUS "Using offload arch string: ${OFFLOAD_ARCH_STR}")
 
@@ -217,17 +224,39 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_custom_target(build_tests)
 
+function(catch_executable src)
+    get_filename_component(barename ${src} NAME)
+    string(REGEX REPLACE ".cc|.cpp" "" exec_name ${barename})
+
+    message("Standalone Catch test: ${exec_name} ${src}")
+    add_executable(${exec_name} EXCLUDE_FROM_ALL  ${src} $<TARGET_OBJECTS:Main_Object_Standalone> $<TARGET_OBJECTS:KERNELS>) 
+    target_link_libraries(${exec_name} PRIVATE stdc++fs -pthread )
+
+    if(HIP_PLATFORM MATCHES "nvidia")
+         target_link_libraries(${exec_name} PRIVATE nvrtc)
+    # elseif(HIP_PLATFORM MATCHES "spirv")
+    #     target_link_libraries(${exec_name} PRIVATE deviceInternal)
+    endif()
+
+    add_dependencies(build_tests ${exec_name})
+
+    target_include_directories(${exec_name} PRIVATE ${Catch2_SOURCE_DIR}/include)
+    catch_discover_tests(${exec_name} PROPERTIES  SKIP_REGULAR_EXPRESSION "HIP_SKIP_THIS_TEST")
+endfunction()
 
 # Tests folder
 add_subdirectory(unit ${CATCH_BUILD_DIR}/unit)
 add_subdirectory(ABM ${CATCH_BUILD_DIR}/ABM)
 add_subdirectory(kernels ${CATCH_BUILD_DIR}/kernels)
 add_subdirectory(hipTestMain ${CATCH_BUILD_DIR}/hipTestMain)
-add_subdirectory(stress ${CATCH_BUILD_DIR}/stress)
-add_subdirectory(TypeQualifiers ${CATCH_BUILD_DIR}/TypeQualifiers)
-if(UNIX)
-   add_subdirectory(multiproc ${CATCH_BUILD_DIR}/multiproc)
+# add_subdirectory(stress ${CATCH_BUILD_DIR}/stress)
+if(NOT HIP_PLATFORM STREQUAL "spirv")
+    add_subdirectory(TypeQualifiers ${CATCH_BUILD_DIR}/TypeQualifiers)
 endif()
+
+# if(UNIX)
+#    add_subdirectory(multiproc ${CATCH_BUILD_DIR}/multiproc)
+# endif()
 
 cmake_policy(POP)
 

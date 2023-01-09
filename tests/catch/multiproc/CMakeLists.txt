@@ -18,7 +18,12 @@ set(LINUX_TEST_SRC
     hipMemGetInfo.cc
 )
 
-add_custom_target(dummy_kernel.code COMMAND ${CMAKE_CXX_COMPILER} --genco ${CMAKE_CURRENT_SOURCE_DIR}/dummy_kernel.cpp -o ${CMAKE_CURRENT_BINARY_DIR}/../multiproc/dummy_kernel.code -I${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/ -I${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+
+if(HIP_PLATFORM MATCHES "amd" OR HIP_PLATFORM MATCHES "nvidia")
+    add_custom_target(dummy_kernel.code COMMAND ${CMAKE_CXX_COMPILER} --genco ${CMAKE_CURRENT_SOURCE_DIR}/dummy_kernel.cpp -o ${CMAKE_CURRENT_BINARY_DIR}/../multiproc/dummy_kernel.code -I${CMAKE_CURRENT_SOURCE_DIR}/../../../../include/ -I${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+    set(LINUX_TEST_SRC ${LINUX_TEST_SRC} deviceAllocationMproc.cc)
+    add_dependencies(build_tests dummy_kernel.code)
+endif()
 
 # the last argument linker libraries is required for this test but optional to the function
 if(HIP_PLATFORM MATCHES "nvidia")
@@ -32,5 +37,4 @@ hip_add_exe_to_target(NAME MultiProc
                       TEST_TARGET_NAME build_tests
                       LINKER_LIBS ${CMAKE_DL_LIBS})
 endif()
-add_dependencies(build_tests dummy_kernel.code)
 

@@ -66,10 +66,10 @@ void CheckHostPointer(int numElements, int* ptr, unsigned eventFlags,
     const int expected = 13;
 
     // Init array to know state:
-    HipTest::launchKernel(Set, dimGrid, dimBlock, 0, 0x0, ptr, -42);
+    hipLaunchKernelGGL(Set, dimGrid, dimBlock, 0, 0x0, ptr, -42);
     HIP_CHECK(hipDeviceSynchronize());
 
-    HipTest::launchKernel(Set, dimGrid, dimBlock, 0, s, ptr, expected);
+    hipLaunchKernelGGL(Set, dimGrid, dimBlock, 0, s, ptr, expected);
     HIP_CHECK(hipEventRecord(e, s));
 
     // Host waits for event :
@@ -133,7 +133,8 @@ TEST_CASE("Unit_hipHostMalloc_Basic") {
 
     dim3 dimGrid(LEN / 512, 1, 1);
     dim3 dimBlock(512, 1, 1);
-    HipTest::launchKernel<float>(HipTest::vectorADD<float>, dimGrid, dimBlock,
+    // TODO - fails to compile
+    hipLaunchKernelGGL(HipTest::vectorADD<float>, dimGrid, dimBlock,
                        0, 0, static_cast<const float*>(A_d),
                        static_cast<const float*>(B_d), C_d, static_cast<size_t>(LEN));
     HIP_CHECK(hipMemcpy(C_h, C_d, LEN*sizeof(float),
