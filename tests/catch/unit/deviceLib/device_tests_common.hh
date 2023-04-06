@@ -5,7 +5,6 @@
 
 #define GENERATE_KERNEL_DOUBLE(FUNCNAME, FUNC)                                                     \
   __global__ void testKernel_##FUNCNAME(double* a) {                                               \
-    int tid = threadIdx.x + blockIdx.x * blockDim.x;                                               \
     FUNC;                                                                                          \
   }                                                                                                \
   TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME "_double") {                             \
@@ -23,7 +22,6 @@
 
 #define GENERATE_KERNEL_FLOAT(FUNCNAME, FUNC)                                                      \
   __global__ void testKernel_##FUNCNAME(float* a) {                                                \
-    int tid = threadIdx.x + blockIdx.x * blockDim.x;                                               \
     FUNC;                                                                                          \
   }                                                                                                \
   TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME "_float") {                              \
@@ -41,7 +39,6 @@
 
 #define GENERATE_KERNEL_INTEGER(FUNCNAME, FUNC)                                                    \
   __global__ void testKernel_##FUNCNAME(int* a) {                                                  \
-    int tid = threadIdx.x + blockIdx.x * blockDim.x;                                               \
     FUNC;                                                                                          \
   }                                                                                                \
   TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME "_int") {                                \
