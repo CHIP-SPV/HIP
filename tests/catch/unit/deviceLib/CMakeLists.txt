@@ -19,6 +19,8 @@ add_subdirectory(SinglePrecisionMathFunctions)
 add_subdirectory(DoublePrecisionMathFunctions)
 add_subdirectory(IntegerMathFunctions)
 
+add_subdirectory(Atomics)
+
 # skipped for windows compiler issue - Illegal instruction detected
 if(UNIX)
     set(TEST_SRC ${TEST_SRC}

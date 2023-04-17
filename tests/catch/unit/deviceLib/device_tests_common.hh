@@ -53,3 +53,20 @@
     REQUIRE(res == hipSuccess);                                                                    \
     HIP_CHECK(hipFree(Outd));                                                                      \
   }
+
+#define GENERATE_KERNEL_ATOMICS(FUNCNAME, TYPE, FUNC)                                                    \
+  __global__ void testKernel_##FUNCNAME() {                                                  \
+    FUNC;                                                                                          \
+  }                                                                                                \
+  TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME) {                                \
+    int* Outd;                                                                                     \
+    auto res = hipMalloc((void**)&Outd, SIZE);                                                     \
+    REQUIRE(res == hipSuccess);                                                                    \
+    hipLaunchKernelGGL(testKernel_##FUNCNAME, dim3(LEN, 1, 1), dim3(1, 1, 1), 0, 0);         \
+    HIP_CHECK(hipGetLastError());                                                                  \
+    res = hipDeviceSynchronize();                                                                  \
+    REQUIRE(res == hipSuccess);                                                                    \
+    res = hipGetLastError();                                                                       \
+    REQUIRE(res == hipSuccess);                                                                    \
+    HIP_CHECK(hipFree(Outd));                                                                      \
+  }
