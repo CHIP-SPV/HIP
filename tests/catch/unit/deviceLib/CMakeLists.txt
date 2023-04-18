@@ -19,6 +19,7 @@ add_subdirectory(SinglePrecisionMathFunctions)
 add_subdirectory(DoublePrecisionMathFunctions)
 add_subdirectory(IntegerMathFunctions)
 
+add_subdirectory(TypeCastIntrinsics)
 add_subdirectory(Atomics)
 
 # skipped for windows compiler issue - Illegal instruction detected
