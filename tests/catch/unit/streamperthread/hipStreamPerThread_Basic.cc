@@ -35,7 +35,8 @@ TEST_CASE("Unit_hipStreamPerThread_Basic") {
   int* hostMem = nullptr;
   int* devMem = nullptr;
 
-  HIP_CHECK(hipHostMalloc(&hostMem, size));
+    hostMem = reinterpret_cast<int*>(malloc(size));
+//   HIP_CHECK(hipHostMalloc(&hostMem, size));
   HIP_CHECK(hipMalloc(&devMem, size));
 
   // Init host mem with different values
