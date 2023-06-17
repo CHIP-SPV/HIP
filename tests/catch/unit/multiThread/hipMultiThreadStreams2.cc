@@ -145,4 +145,8 @@ TEST_CASE("Unit_hipMultiThreadStreams2") {
         t2.join();
         t3.join();
     }
+
+    for (int i = 0; i < 3; i++) {
+        HIPCHECK(hipStreamDestroy(stream[i]));
+    }
 }
