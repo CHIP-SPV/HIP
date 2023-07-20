@@ -545,7 +545,7 @@ TEMPLATE_TEST_CASE("Unit_hipMallocPitch_KernelLaunch", ""
                         hipMemcpyDeviceToHost));
 
   // Validating the result
-  validateResult(A_h, B_h, pitch_A);
+  REQUIRE(validateResult(A_h, B_h, pitch_A));
 
   // DeAllocating the memory
   HIP_CHECK(hipFree(A_d));
