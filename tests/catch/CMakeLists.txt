@@ -106,6 +106,7 @@ find_package(Catch2 REQUIRED
         ${CMAKE_CURRENT_LIST_DIR}/external
     PATH_SUFFIXES
     Catch2/cmake/Catch2
+    NO_DEFAULT_PATH
 )
 include(Catch)
 include(CTest)
