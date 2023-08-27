@@ -35,7 +35,13 @@ This testcase verifies following scenarios
 #include <windows.h>
 #else
 #include "sys/types.h"
+#if defined(__APPLE__) || defined(__MACOSX)
+#include <mach/mach.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
+#else
 #include "sys/sysinfo.h"
+#endif
 #endif
 
 
@@ -177,9 +183,25 @@ void memcpytest2_get_host_memory(size_t *free, size_t *total) {
   *free = static_cast<size_t>(0.4 * status.ullAvailPhys);
   *total = static_cast<size_t>(0.4 * status.ullTotalPhys);
 }
-#else
-struct sysinfo memInfo;
+#elif defined(__APPLE__) || defined(__MACOSX)
 void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
+#if 0
+  // from https://stackoverflow.com/a/8782978
+  mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
+  vm_statistics_data_t vmstat;
+  if(KERN_SUCCESS != host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmstat, &count)) {
+      // An error occurred
+  }
+
+  size_t pageSize = sysconf(_SC_PAGESIZE);
+
+  *total = (vmstat.wire_count + vmstat.active_count + vmstat.inactive_count + vmstat.free_count + Pages occupied by compressor + Pages speculative) * pageSize;
+  *free = vmstat.free_count * pageSize;
+#endif
+}
+#else
+void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
+  struct sysinfo memInfo;
   sysinfo(&memInfo);
   uint64_t freePhysMem = memInfo.freeram;
   freePhysMem *= memInfo.mem_unit;

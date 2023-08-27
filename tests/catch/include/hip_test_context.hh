@@ -36,9 +36,15 @@ THE SOFTWARE.
 #if defined(_WIN32)
 #define HT_WIN 1
 #define HT_LINUX 0
+#define HT_MACOS 0
 #elif defined(__linux__)
 #define HT_WIN 0
 #define HT_LINUX 1
+#define HT_MACOS 0
+#elif defined(__APPLE__) || defined(__MACOSX)
+#define HT_WIN 0
+#define HT_LINUX 0
+#define HT_MACOS 1
 #else
 #error "OS not recognized"
 #endif
@@ -86,7 +92,7 @@ class TestContext {
   std::set<std::string> skip_test;
   std::string json_file_;
   std::vector<std::string> platform_list_ = {"amd", "nvidia"};
-  std::vector<std::string> os_list_ = {"windows", "linux", "all"};
+  std::vector<std::string> os_list_ = {"windows", "linux", "macos", "all"};
   std::vector<std::string> amd_arch_list_ = {};
 
   struct rtcState {
@@ -130,7 +136,8 @@ class TestContext {
     if (!::getenv_s(&dstSize, dstBuf, MAX_LEN, var.c_str())) {
       return std::string(dstBuf);
     }
-    #elif defined(__linux__)
+    #elif defined(__linux__) || \
+          (defined(__APPLE__) || defined(__MACOSX))
     char* val = std::getenv(var.c_str());
     if (val != NULL) {
       return std::string(val);

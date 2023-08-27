@@ -25,6 +25,8 @@ THE SOFTWARE.
 
 #ifdef __linux__
   #include <sys/sysinfo.h>
+#elif defined(__APPLE__) || defined(__MACOSX)
+  // No-op
 #else
   #include <windows.h>
   #include <sysinfoapi.h>
