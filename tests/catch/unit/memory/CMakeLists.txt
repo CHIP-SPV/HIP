@@ -176,7 +176,7 @@ endif()
 
 # skipped due to os related code in tests
 # need to work on them when all the tests are enabled
-if(UNIX)
+if(UNIX AND NOT APPLE)
     set(TEST_SRC ${TEST_SRC}
                  hipHmmOvrSubscriptionTst.cc
                  hipMemoryAllocateCoherent.cc)
