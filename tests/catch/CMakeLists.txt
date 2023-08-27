@@ -50,8 +50,8 @@ message(STATUS "ROCM Path: ${ROCM_PATH}")
 
 
 if(UNIX)
-    set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc.bin")
-    set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc.bin")
+    set(CMAKE_CXX_COMPILER "${HIP_PATH}/bin/hipcc")
+    set(CMAKE_C_COMPILER "${HIP_PATH}/bin/hipcc")
     set(HIPCONFIG_EXECUTABLE "${HIP_PATH}/bin/hipconfig.bin")
     # execute_process(COMMAND ${HIPCONFIG_EXECUTABLE} --version
     #                 OUTPUT_VARIABLE HIP_VERSION
