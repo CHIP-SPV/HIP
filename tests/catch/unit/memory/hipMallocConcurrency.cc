@@ -64,7 +64,7 @@ static constexpr auto BuffSizeSC = 16;
 
 /* You may change it for individual test.
  * But default 100 is for quick return in Jenkin Build */
-static constexpr auto NumDiv = 100;
+static constexpr auto NumDiv = 200;
 
 /* Max alloc/free iterations for smaller chunks */
 static constexpr auto MaxAllocFree_SmallChunks = (5000000 / NumDiv);
