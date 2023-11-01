@@ -4,7 +4,11 @@
 #define SIZE LEN << 2
 
 #define GENERATE_KERNEL_DOUBLE(FUNCNAME, FUNC)                                                     \
-  __global__ void testKernel_##FUNCNAME(double* a) { FUNC; }                                       \
+  __global__ void testKernel_##FUNCNAME(double* a) {                                               \
+   size_t x = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x;                                      \
+   double Out = FUNC;                                                                              \
+   printf("%lf\n", Out);                                                                           \
+  }                                                                                                \
   TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME "_double") {                             \
     double* Outd;                                                                                  \
     auto res = hipMalloc((void**)&Outd, SIZE);                                                     \
@@ -19,7 +23,11 @@
   }
 
 #define GENERATE_KERNEL_FLOAT(FUNCNAME, FUNC)                                                      \
-  __global__ void testKernel_##FUNCNAME(float* a) { FUNC; }                                        \
+  __global__ void testKernel_##FUNCNAME(float* a) {                                                \
+   size_t x = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x;                                      \
+   float Out = FUNC;                                                                               \
+   printf("%f\n", Out);                                                                            \
+  }                                                                                                \
   TEST_CASE("Unit_deviceFunctions_CompileTest_" #FUNCNAME "_float") {                              \
     float* Outd;                                                                                   \
     auto res = hipMalloc((void**)&Outd, SIZE);                                                     \
