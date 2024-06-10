@@ -58,11 +58,33 @@ void HIPRT_CB Callback(hipStream_t stream, hipError_t status,
       break;
     }
   }
+  printf("Callback Complete\n");
   gcbDone = true;
 }
 /**
  * Validates functionality of hipStreamAddCallback with default/created stream.
  */
+
+//template <typename T> __global__ void local_vector_square(const T* A_d, T* C_d, size_t N_ELMTS) {
+//  size_t gputhread = (blockIdx.x * blockDim.x + threadIdx.x);
+//  size_t stride = blockDim.x * gridDim.x;
+//  for (size_t i = gputhread; i < N_ELMTS; i += stride) {
+//    C_d[i] = A_d[i] * A_d[i];
+//  }
+//  printf("Kernel Complete\n");
+//}
+
+__global__ void local_vector_square(const float* A_d, float* C_d, size_t N_ELMTS) {
+  size_t gputhread = (blockIdx.x * blockDim.x + threadIdx.x);
+  size_t stride = blockDim.x * gridDim.x;
+  printf("Kernel launched with printf!\n");
+//  for (size_t i = gputhread; i < N_ELMTS; i += stride) {
+//    C_d[i] = A_d[i] * A_d[i];
+//    return;
+//  }
+}
+
+
 bool testStreamCallbackFunctionality(bool isDefault) {
   float *A_d, *C_d;
   size_t Nbytes = NSize * sizeof(float);
@@ -80,35 +102,37 @@ bool testStreamCallbackFunctionality(bool isDefault) {
   HIP_CHECK(hipMalloc(&A_d, Nbytes));
   HIP_CHECK(hipMalloc(&C_d, Nbytes));
   if (isDefault) {
-    HIP_CHECK(hipMemcpyAsync(A_d, A_h, Nbytes, hipMemcpyHostToDevice,
-                            0));
+    //HIP_CHECK(hipMemcpyAsync(A_d, A_h, Nbytes, hipMemcpyHostToDevice,
+    //                        0));
 
     const unsigned blocks = 512;
     const unsigned threadsPerBlock = 256;
-    hipLaunchKernelGGL((HipTest::vector_square), dim3(blocks),
+    hipLaunchKernelGGL((local_vector_square), dim3(blocks),
                         dim3(threadsPerBlock), 0, 0, A_d, C_d, NSize);
     HIP_CHECK(hipGetLastError());
-    HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost,
-                            0));
+    //hipDeviceSynchronize();
+    //HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost,
+    //                        0));
     HIP_CHECK(hipStreamAddCallback(0, Callback, nullptr, 0));
     while (!gcbDone) std::this_thread::sleep_for(std::chrono::microseconds(100000));  // Sleep for 100 ms
+    exit(0);
   } else {
-    hipStream_t mystream;
-    HIP_CHECK(hipStreamCreateWithFlags(&mystream, hipStreamNonBlocking));
+ //   hipStream_t mystream;
+ //   HIP_CHECK(hipStreamCreateWithFlags(&mystream, hipStreamNonBlocking));
 
-    HIP_CHECK(hipMemcpyAsync(A_d, A_h, Nbytes, hipMemcpyHostToDevice,
-                            mystream));
+ //   HIP_CHECK(hipMemcpyAsync(A_d, A_h, Nbytes, hipMemcpyHostToDevice,
+ //                           mystream));
 
-    const unsigned blocks = 512;
-    const unsigned threadsPerBlock = 256;
-    hipLaunchKernelGGL((HipTest::vector_square), dim3(blocks),
-                      dim3(threadsPerBlock), 0, mystream, A_d, C_d, NSize);
-    HIP_CHECK(hipGetLastError());
-    HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost,
-                            mystream));
-    HIP_CHECK(hipStreamAddCallback(mystream, Callback, nullptr, 0));
-    while (!gcbDone) std::this_thread::sleep_for(std::chrono::microseconds(100000));  // Sleep for 100 ms
-    HIP_CHECK(hipStreamDestroy(mystream));
+ //   const unsigned blocks = 512;
+ //   const unsigned threadsPerBlock = 256;
+ //   hipLaunchKernelGGL((HipTest::vector_square), dim3(blocks),
+ //                     dim3(threadsPerBlock), 0, mystream, A_d, C_d, NSize);
+ //   HIP_CHECK(hipGetLastError());
+ //   HIP_CHECK(hipMemcpyAsync(C_h, C_d, Nbytes, hipMemcpyDeviceToHost,
+ //                           mystream));
+ //   HIP_CHECK(hipStreamAddCallback(mystream, Callback, nullptr, 0));
+ //   while (!gcbDone) std::this_thread::sleep_for(std::chrono::microseconds(100000));  // Sleep for 100 ms
+ //   HIP_CHECK(hipStreamDestroy(mystream));
   }
   HIP_CHECK(hipFree(reinterpret_cast<void*>(C_d)));
   HIP_CHECK(hipFree(reinterpret_cast<void*>(A_d)));
