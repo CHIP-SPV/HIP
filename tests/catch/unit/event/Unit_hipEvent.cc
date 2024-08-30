@@ -119,7 +119,7 @@ void test(unsigned testMask, int* C_d, int* C_h, int64_t numElements, hipStream_
     HIP_ASSERT(e == expectedStopError || (e == hipErrorNotReady && syncMode == syncNone));
     if (e == hipSuccess) assert(t == 0.0f);
 
-    auto e = hipEventElapsedTime(&t, start, stop);
+    e = hipEventElapsedTime(&t, start, stop);
     printf("Time: %f\n", t);
     HIP_ASSERT(e == expectedStopError);
     if (expectedStopError == hipSuccess) assert(t > 0.0f);
