@@ -526,7 +526,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_DifferentChannelSizes") {
   INFO("format: " << channelFormatString(channelFormat) << ", x bits: " << bitsX
                   << ", y bits: " << bitsY << ", z bits: " << bitsZ << ", w bits: " << bitsW);
 
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, width, height, flag), hipErrorInvalidValue);
 #else
@@ -569,7 +569,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_BadFlags") {
 
   hipArray_t arrayPtr;
   SECTION("Flags that dont work with 1D") {
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
     // * cudaArrayLayered           0x01 - 1
     // * cudaArrayCubemap           0x04 - 4
     unsigned int flag =
@@ -598,7 +598,7 @@ TEMPLATE_TEST_CASE("Unit_hipMallocArray_Negative_8bitFloat", "", float, float2, 
   // pointer to the array in device memory
   hipArray_t arrayPtr;
 
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flags = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, 1024, 1024, flags), hipErrorInvalidValue);
 #else
@@ -623,7 +623,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_BadNumberOfBits") {
   hipArray_t arrayPtr;
 
   INFO("Number of bits: " << badBits);
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, 1024, 1024, flag), hipErrorInvalidValue);
 #else
@@ -650,7 +650,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_3ChannelElement") {
   // pointer to the array in device memory
   hipArray_t arrayPtr;
 
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, 1024, 1024, flag), hipErrorInvalidValue);
 #else
@@ -677,7 +677,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_ChannelAfterZeroChannel") {
   INFO("x: " << desc.x << ", y: " << desc.y << ", z: " << desc.z << ", w: " << desc.w);
 
   hipArray_t arrayPtr;
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, 1024, 1024, flag), hipErrorInvalidValue);
 #else
@@ -700,7 +700,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_InvalidChannelFormat") {
 
   CAPTURE(formatKind);
 
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
   HIP_CHECK_ERROR(hipMallocArray(&arrayPtr, &desc, 1024, 1024, flag), hipErrorInvalidValue);
 #else
@@ -716,7 +716,7 @@ TEST_CASE("Unit_hipMallocArray_Negative_NumericLimit") {
   hipChannelFormatDesc desc = hipCreateChannelDesc<float>();
 
   size_t size = std::numeric_limits<size_t>::max();
-#if HT_AMD
+#if defined(HT_AMD) || defined(HT_SPIRV)
   unsigned int flag = hipArrayDefault;
 #else
   unsigned int flag = GENERATE(hipArrayDefault, hipArraySurfaceLoadStore, hipArrayTextureGather);
