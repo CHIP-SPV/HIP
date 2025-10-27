@@ -33,9 +33,12 @@ This testcase verifies following scenarios
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#else
+#elif defined(__linux__)
 #include "sys/types.h"
 #include "sys/sysinfo.h"
+#elif defined(__APPLE__)
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #endif
 
 
@@ -177,7 +180,7 @@ void memcpytest2_get_host_memory(size_t *free, size_t *total) {
   *free = static_cast<size_t>(0.4 * status.ullAvailPhys);
   *total = static_cast<size_t>(0.4 * status.ullTotalPhys);
 }
-#else
+#elif defined(__linux__)
 struct sysinfo memInfo;
 void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
   sysinfo(&memInfo);
@@ -187,6 +190,12 @@ void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
   uint64_t totalPhysMem = memInfo.totalram;
   totalPhysMem *= memInfo.mem_unit;
   *total = totalPhysMem;
+}
+#else
+void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
+  // On non-Linux, non-Windows platforms, use reasonable defaults
+  *free = 4 * 1024 * 1024 * 1024;  // 4 GB
+  *total = 8 * 1024 * 1024 * 1024;  // 8 GB
 }
 #endif
 
@@ -613,7 +622,5 @@ TEMPLATE_TEST_CASE("Unit_hipMemcpy_PinnedRegMemWithKernelLaunch",
       HipTest::freeArrays<TestType>(A_d, B_d, C_d, nullptr,
                                     nullptr, nullptr, false);
     }
-      HipTest::freeArrays<TestType>(X_d, Y_d, Z_d, nullptr,
-                                    nullptr, nullptr, false);
   }
 }

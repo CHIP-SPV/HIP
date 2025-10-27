@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <cstring>
 #include <vector>
 #include <limits>
+#include <thread>
 #include <hip_test_checkers.hh>
 #include <hip_test_kernels.hh>
 #ifdef __HIP_PLATFORM_NVIDIA__

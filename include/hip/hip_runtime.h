@@ -46,13 +46,20 @@ THE SOFTWARE.
 // paths to provide a consistent include env and avoid "missing symbol" errors that only appears
 // on NVCC path:
 #include <stdint.h>
+#ifndef __HIP_DEVICE_COMPILE__
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#endif
 
 #if __cplusplus > 199711L
+#ifndef __HIP_DEVICE_COMPILE__
 #include <thread>
 #endif
+#endif
+#else
+// For device compilation under __HIPCC_RTC__, need stdint for basic types
+#include <stdint.h>
 #endif // !defined(__HIPCC_RTC__)
 
 #include <hip/hip_version.h>

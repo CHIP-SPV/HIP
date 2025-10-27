@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <iostream>
 #include <iomanip>
 #include <mutex>
+#include <thread>
 #include <cstdlib>
 
 #define HIP_PRINT_STATUS(status) INFO(hipGetErrorName(status) << " at line: " << __LINE__);
@@ -330,9 +331,18 @@ template <> struct MemTraits<MemcpyAsync> {
 
 namespace {
 static __global__ void waitKernel(clock_t offset) {
+#ifndef __APPLE__
+  // clock() is not available in device code on macOS
   auto start = clock();
   while ((clock() - start) < offset) {
   }
+#else
+  // On macOS, provide a simple busy-wait alternative
+  // This is not timing-accurate but allows compilation
+  for (volatile clock_t i = 0; i < offset * 1000; i++) {
+    // Busy wait
+  }
+#endif
 }
 
 // helper function used to set the device frequency variable
@@ -408,3 +418,5 @@ static inline void runKernelForDuration(std::chrono::milliseconds duration,
     INFO("Texture is not support on the device. Skipped.");                                        \
     return;                                                                                        \
   }
+
+

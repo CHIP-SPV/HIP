@@ -1,4 +1,9 @@
 #include <hip_test_common.hh>
+#include <hip/devicelib/type_casting_intrinsics.hh>
+#include <hip/devicelib/single_precision/sp_intrinsics.hh>
+#include <hip/devicelib/double_precision/dp_intrinsics.hh>
+#include <hip/devicelib/integer/int_intrinsics.hh>
+#include <hip/devicelib/atomics.hh>
 
 #define LEN 512
 #define SIZE LEN << 2

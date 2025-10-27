@@ -36,9 +36,15 @@ THE SOFTWARE.
 #if defined(_WIN32)
 #define HT_WIN 1
 #define HT_LINUX 0
+#define HT_MACOS 0
 #elif defined(__linux__)
 #define HT_WIN 0
 #define HT_LINUX 1
+#define HT_MACOS 0
+#elif defined(__APPLE__) || defined(__MACH__)
+#define HT_WIN 0
+#define HT_LINUX 0
+#define HT_MACOS 1
 #else
 #error "OS not recognized"
 #endif
@@ -63,7 +69,7 @@ THE SOFTWARE.
 typedef struct Config_ {
   std::vector<std::string> json_files;  // Json files
   std::string platform;   // amd/nvidia
-  std::string os;         // windows/linux
+  std::string os;         // windows/linux/macos
 } Config;
 
 // Store Multi threaded results
@@ -79,14 +85,14 @@ struct HCResult {
 
 
 class TestContext {
-  bool p_windows = false, p_linux = false;  // OS
+  bool p_windows = false, p_linux = false, p_macos = false;  // OS
   bool amd = false, nvidia = false;         // HIP Platform
   std::string exe_path;
   std::string current_test;
   std::set<std::string> skip_test;
   std::string json_file_;
   std::vector<std::string> platform_list_ = {"amd", "nvidia"};
-  std::vector<std::string> os_list_ = {"windows", "linux", "all"};
+  std::vector<std::string> os_list_ = {"windows", "linux", "macos", "all"};
   std::vector<std::string> amd_arch_list_ = {};
 
   struct rtcState {
@@ -130,7 +136,7 @@ class TestContext {
     if (!::getenv_s(&dstSize, dstBuf, MAX_LEN, var.c_str())) {
       return std::string(dstBuf);
     }
-    #elif defined(__linux__)
+    #elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__)
     char* val = std::getenv(var.c_str());
     if (val != NULL) {
       return std::string(val);
@@ -144,6 +150,7 @@ class TestContext {
 
   bool isWindows() const;
   bool isLinux() const;
+  bool isMacOS() const;
   bool isNvidia() const;
   bool isAmd() const;
   bool skipTest() const;

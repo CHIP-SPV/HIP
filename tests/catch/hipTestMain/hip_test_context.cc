@@ -12,6 +12,8 @@ void TestContext::detectOS() {
   p_windows = true;
 #elif (HT_LINUX == 1)
   p_linux = true;
+#elif (HT_MACOS == 1)
+  p_macos = true;
 #endif
 }
 
@@ -135,6 +137,7 @@ void TestContext::setExePath(int argc, char** argv) {
 
 bool TestContext::isWindows() const { return p_windows; }
 bool TestContext::isLinux() const { return p_linux; }
+bool TestContext::isMacOS() const { return p_macos; }
 
 bool TestContext::isNvidia() const { return nvidia; }
 bool TestContext::isAmd() const { return amd; }

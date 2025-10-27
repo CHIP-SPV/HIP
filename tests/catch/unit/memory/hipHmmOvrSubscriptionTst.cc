@@ -140,6 +140,7 @@ static void DisplayHmmFlgs(int *Signal) {
 }
 
 TEST_CASE("Unit_HMM_OverSubscriptionTst") {
+#ifdef __linux__
   int HmmEnabled = 0;
   // The following Shared Mem is to get Max GPU Mem
   // The size requested is for three ints
@@ -210,4 +211,9 @@ TEST_CASE("Unit_HMM_OverSubscriptionTst") {
   }
   shmdt(TotGpuMem);
   shmctl(shmid, IPC_RMID, NULL);
+#else
+  // On non-Linux platforms (macOS, Windows), this test requires POSIX IPC
+  // which is not available. Skip the test gracefully.
+  HipTest::HIP_SKIP_TEST("Unit_HMM_OverSubscriptionTst requires POSIX IPC, skipped on non-Linux platforms");
+#endif
 }

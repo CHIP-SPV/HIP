@@ -30,7 +30,9 @@ THE SOFTWARE.
 #ifndef HIP_INCLUDE_HIP_HIP_RUNTIME_API_H
 #define HIP_INCLUDE_HIP_HIP_RUNTIME_API_H
 
+#if !defined(__HIP_DEVICE_COMPILE__) && !defined(__HIP_PLATFORM_SPIRV__)
 #include <string.h>  // for getDeviceProp
+#endif
 #include <hip/hip_version.h>
 #include <hip/hip_common.h>
 
@@ -1590,7 +1592,6 @@ typedef struct hipMemcpyNodeParams {
     int reserved[3];               ///< Must be zero.
     hipMemcpy3DParms copyParams;   ///< Params set for the memory copy.
 } hipMemcpyNodeParams;
-
 /**
  * Child graph node params
  */
@@ -2097,7 +2098,7 @@ hipError_t hipDeviceSetSharedMemConfig(hipSharedMemConfig config);
  * hipDeviceMapHost              : Allow mapping host memory.  On ROCM, this is always allowed and
  * the flag is ignored. hipDeviceLmemResizeToMax      : @warning ROCm silently ignores this flag.
  *
- * @returns #hipSuccess, #hipErrorInvalidDevice, #hipErrorSetOnActiveProcess
+ * @returns #hipSuccess, #hipErrorInvalidDevice, #hipErrorInvalidValue
  *
  *
  */
@@ -2390,7 +2391,6 @@ hipError_t hipDrvGetErrorString(hipError_t hipError, const char** errorString);
  *  The following Stream APIs are not (yet) supported in HIP:
  *  - hipStreamAttachMemAsync is a nop
  */
-
 /**
  * @brief Create an asynchronous stream.
  *
@@ -3488,7 +3488,7 @@ hipError_t hipMemPoolTrimTo(hipMemPool_t mem_pool, size_t min_bytes_to_hold);
  * @returns #hipSuccess, #hipErrorInvalidValue
  *
  * @see hipMallocFromPoolAsync, hipMallocAsync, hipFreeAsync, hipMemPoolGetAttribute,
- * hipMemPoolTrimTo, hipDeviceSetMemPool, hipMemPoolSetAccess, hipMemPoolGetAccess
+ * hipMemPoolTrimTo, hipDeviceSetMemPool, hipMemPoolSetAttribute, hipMemPoolSetAccess, hipMemPoolGetAccess
  *
  * @warning : This API is marked as beta, meaning, while this is feature complete,
  * it is still open to changes and may have outstanding issues.
@@ -3545,7 +3545,7 @@ hipError_t hipMemPoolGetAttribute(hipMemPool_t mem_pool, hipMemPoolAttr attr, vo
  * @returns  #hipSuccess, #hipErrorInvalidValue
  *
  * @see hipMallocFromPoolAsync, hipMallocAsync, hipFreeAsync, hipMemPoolGetAttribute,
- * hipMemPoolTrimTo, hipDeviceSetMemPool, hipMemPoolSetAttribute, hipMemPoolGetAccess
+ * hipMemPoolTrimTo, hipDeviceSetMemPool, hipMemPoolSetAttribute, hipMemPoolSetAccess, hipMemPoolGetAccess
  *
  * @warning : This API is marked as beta, meaning, while this is feature complete,
  * it is still open to changes and may have outstanding issues.
@@ -4663,12 +4663,12 @@ hipError_t hipMemcpy2DToArrayAsync(hipArray_t dst, size_t wOffset, size_t hOffse
 /**
  *  @brief Copies data between host and device.
  *
- *  @param[in]   dst     Destination memory address
- *  @param[in]   wOffset Destination starting X offset
- *  @param[in]   hOffset Destination starting Y offset
- *  @param[in]   src     Source memory address
- *  @param[in]   count   size in bytes to copy
- *  @param[in]   kind    Type of transfer
+ *  @param[in]   dst       Destination memory address
+ *  @param[in]   wOffset   Destination starting X offset
+ *  @param[in]   hOffset   Destination starting Y offset
+ *  @param[in]   src       Source memory address
+ *  @param[in]   count     Size in bytes to copy
+ *  @param[in]   kind      Type of transfer
  *  @return      #hipSuccess, #hipErrorInvalidValue, #hipErrorInvalidPitchValue,
  * #hipErrorInvalidDevicePointer, #hipErrorInvalidMemcpyDirection
  *
@@ -4686,7 +4686,7 @@ hipError_t hipMemcpyToArray(hipArray_t dst, size_t wOffset, size_t hOffset, cons
  *  @param[in]   srcArray  Source memory address
  *  @param[in]   wOffset   Source starting X offset
  *  @param[in]   hOffset   Source starting Y offset
- *  @param[in]   count     Size in bytes to copy
+ *  @param[in]   count     Size of memory copy in bytes
  *  @param[in]   kind      Type of transfer
  *  @return      #hipSuccess, #hipErrorInvalidValue, #hipErrorInvalidPitchValue,
  * #hipErrorInvalidDevicePointer, #hipErrorInvalidMemcpyDirection
@@ -5572,7 +5572,6 @@ hipError_t hipModuleOccupancyMaxPotentialBlockSize(int* gridSize, int* blockSize
  *
  * @returns #hipSuccess, #hipErrorInvalidValue
  */
-//TODO - Match CUoccupancyB2DSize
 hipError_t hipModuleOccupancyMaxPotentialBlockSizeWithFlags(int* gridSize, int* blockSize,
                                              hipFunction_t f, size_t dynSharedMemPerBlk,
                                              int blockSizeLimit, unsigned int  flags);
@@ -5814,8 +5813,8 @@ hipError_t hipDrvMemcpy2DUnaligned(const hip_Memcpy2D* pCopy);
  * @param [in] args pointer to kernel arguments.
  * @param [in] sharedMemBytes  Amount of dynamic shared memory to allocate for this kernel.
  * HIP-Clang compiler provides support for extern shared declarations.
- * @param [in] stream  Stream where the kernel should be dispatched.
- * May be 0, in which case the default stream is used with associated synchronization rules.
+ * @param [in] stream  Stream where the kernel should be dispatched.  May be 0, in which case the
+ * default stream is used with associated synchronization rules.
  * @param [in] startEvent  If non-null, specified event will be updated to track the start time of
  * the kernel launch. The event must be created before calling this API.
  * @param [in] stopEvent  If non-null, specified event will be updated to track the stop time of
@@ -7929,7 +7928,6 @@ hipError_t hipGraphDebugDotPrint(hipGraph_t graph, const char* path, unsigned in
  * it is still open to changes and may have outstanding issues.
  */
 hipError_t hipGraphKernelNodeCopyAttributes(hipGraphNode_t hSrc, hipGraphNode_t hDst);
-
 /**
  * @brief Enables or disables the specified node in the given graphExec
  *
@@ -8499,6 +8497,7 @@ static hipError_t __host__ inline hipOccupancyMaxPotentialBlockSize(int* gridSiz
 template <typename T>
 static hipError_t __host__ inline hipOccupancyMaxPotentialBlockSizeWithFlags(int* gridSize, int* blockSize,
     T f, size_t dynSharedMemPerBlk = 0, int blockSizeLimit = 0, unsigned int  flags = 0 ) {
+    (void)flags; // flags currently unsupported in 5-arg overload
     return hipOccupancyMaxPotentialBlockSize(gridSize, blockSize, reinterpret_cast<const void*>(f),dynSharedMemPerBlk,blockSizeLimit);
 }
 #endif // defined(__clang__) && defined(__HIP__)
