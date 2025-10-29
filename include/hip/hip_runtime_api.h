@@ -30,6 +30,7 @@ THE SOFTWARE.
 #ifndef HIP_INCLUDE_HIP_HIP_RUNTIME_API_H
 #define HIP_INCLUDE_HIP_HIP_RUNTIME_API_H
 
+#include <stddef.h>  // for size_t
 #if !defined(__HIP_DEVICE_COMPILE__) && !defined(__HIP_PLATFORM_SPIRV__)
 #include <string.h>  // for getDeviceProp
 #endif
