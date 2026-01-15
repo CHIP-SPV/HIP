@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include <mutex>
 #include <thread>
 #include <cstdlib>
+#include <cstring>
 
 #define HIP_PRINT_STATUS(status) INFO(hipGetErrorName(status) << " at line: " << __LINE__);
 
