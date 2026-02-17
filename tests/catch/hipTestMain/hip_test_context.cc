@@ -22,6 +22,8 @@ void TestContext::detectPlatform() {
   amd = true;
 #elif (HT_NVIDIA == 1)
   nvidia = true;
+#elif (HT_SPIRV == 1)
+  spirv = true;
 #endif
 }
 
@@ -93,7 +95,7 @@ std::string& TestContext::getCommonJsonFile() {
 
 
 void TestContext::getConfigFiles() {
-  config_.platform = (amd ? "amd" : (nvidia ? "nvidia" : "unknown"));
+  config_.platform = (amd ? "amd" : (nvidia ? "nvidia" : (spirv ? "spirv" : "unknown")));
   config_.os = (p_windows ? "windows" : (p_linux ? "linux" : "unknown"));
 
   if (config_.os == "unknown" || config_.platform == "unknown") {
