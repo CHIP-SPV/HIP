@@ -25,9 +25,11 @@ THE SOFTWARE.
 
 #ifdef __linux__
   #include <sys/sysinfo.h>
-#else
+#elif defined(_WIN32)
   #include <windows.h>
   #include <sysinfoapi.h>
+#elif defined(__APPLE__)
+  #include <sys/sysctl.h>
 #endif
 
 namespace HipTest {
@@ -48,6 +50,12 @@ static inline size_t getMemoryAmount() {
   statex.dwLength = sizeof(statex);
   GlobalMemoryStatusEx(&statex);
   return (statex.ullAvailPhys / (1024 * 1024));  // MB
+#elif defined(__APPLE__)
+  // Return total physical memory as a rough estimate
+  uint64_t memsize = 0;
+  size_t len = sizeof(memsize);
+  sysctlbyname("hw.memsize", &memsize, &len, nullptr, 0);
+  return memsize / (1024 * 1024);  // MB
 #endif
 }
 

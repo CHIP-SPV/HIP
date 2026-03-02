@@ -33,9 +33,12 @@ This testcase verifies following scenarios
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#else
+#elif defined(__linux__)
 #include "sys/types.h"
 #include "sys/sysinfo.h"
+#elif defined(__APPLE__)
+#include <sys/sysctl.h>
+#include <mach/mach.h>
 #endif
 
 
@@ -176,6 +179,19 @@ void memcpytest2_get_host_memory(size_t *free, size_t *total) {
   // otherwise we can run into OOM issues.
   *free = static_cast<size_t>(0.4 * status.ullAvailPhys);
   *total = static_cast<size_t>(0.4 * status.ullTotalPhys);
+}
+#elif defined(__APPLE__)
+void memcpytest2_get_host_memory(size_t  *free, size_t *total) {
+  uint64_t memsize = 0;
+  size_t len = sizeof(memsize);
+  sysctlbyname("hw.memsize", &memsize, &len, nullptr, 0);
+  *total = memsize;
+  // Approximate free memory using Mach VM stats
+  vm_statistics64_data_t vmstat;
+  mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+  host_statistics64(mach_host_self(), HOST_VM_INFO64,
+                    reinterpret_cast<host_info64_t>(&vmstat), &count);
+  *free = static_cast<size_t>(vmstat.free_count) * vm_page_size;
 }
 #else
 struct sysinfo memInfo;
