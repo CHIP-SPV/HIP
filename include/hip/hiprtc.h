@@ -208,7 +208,7 @@ hiprtcResult hiprtcAddNameExpression(hiprtcProgram prog,
  */
 hiprtcResult hiprtcCompileProgram(hiprtcProgram prog,
                                   int numOptions,
-                                  const char** options);
+                                  const char* const* options);
 
 /**
  * @ingroup Runtime
@@ -234,8 +234,8 @@ hiprtcResult hiprtcCreateProgram(hiprtcProgram* prog,
                                  const char* src,
                                  const char* name,
                                  int numHeaders,
-                                 const char** headers,
-                                 const char** includeNames);
+                                 const char* const* headers,
+                                 const char* const* includeNames);
 
 /**
  * @brief Destroys an instance of given hiprtcProgram.
