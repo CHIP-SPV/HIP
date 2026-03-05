@@ -64,6 +64,13 @@ static bool verify(const int* C_d, const int* A_d) {
 }
 
 TEST_CASE("Unit_hipMemFaultStackAllocation_Check") {
+  int managedSupport = 0;
+  HIP_CHECK(hipDeviceGetAttribute(&managedSupport,
+                                  hipDeviceAttributeManagedMemory, 0));
+  if (!managedSupport) {
+    HipTest::HIP_SKIP_TEST("Device does not support managed memory");
+    return;
+  }
   hipError_t ret;
   int *A_d, *C_d;
   const size_t Nbytes = N * sizeof(int);

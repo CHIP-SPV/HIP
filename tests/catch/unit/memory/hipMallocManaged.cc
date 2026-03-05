@@ -60,9 +60,8 @@ static unsigned threadsPerBlock{256};
 TEST_CASE("Unit_hipMallocManaged_Basic") {
   auto managed = HmmAttrPrint();
   if (managed != 1) {
-    WARN(
-        "GPU doesn't support hipDeviceAttributeManagedMemory attribute so defaulting to system "
-        "memory.");
+    HipTest::HIP_SKIP_TEST("GPU doesn't support managed memory");
+    return;
   }
 
   float *A, *B, *C;
