@@ -172,6 +172,12 @@ This testcase verifies the hipHostMalloc API by
 3. validates the result.
 */
 TEST_CASE("Unit_hipHostMalloc_NonCoherent") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   int* A = nullptr;
   HIP_CHECK(hipHostMalloc(reinterpret_cast<void**>(&A),
                           sizeBytes, hipHostMallocNonCoherent));
@@ -224,6 +230,12 @@ This testcase verifies the hipHostMalloc API by
 3. validates the result.
 */
 TEST_CASE("Unit_hipHostMalloc_Default") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   int* A = nullptr;
   HIP_CHECK(hipHostMalloc(reinterpret_cast<void**>(&A), sizeBytes));
   const char* ptrType = "default";

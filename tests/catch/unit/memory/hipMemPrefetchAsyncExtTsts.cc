@@ -322,6 +322,13 @@ TEST_CASE("Unit_hipMemPrefetchAsyncNegativeTst") {
    which is not multiple of page Size, but still trying to launch kernel and
    see if we are getting values as expected.*/
 TEST_CASE("Unit_hipMemPrefetchAsync_NonPageSz") {
+  int managedSupport = 0;
+  HIP_CHECK(hipDeviceGetAttribute(&managedSupport,
+                                  hipDeviceAttributeManagedMemory, 0));
+  if (!managedSupport) {
+    HipTest::HIP_SKIP_TEST("Device does not support managed memory");
+    return;
+  }
   int *Hmm = nullptr, NumElms = 4096*2, InitVal = 123;
   hipStream_t strm;
   bool IfTestPassed = true;

@@ -44,6 +44,12 @@ __global__ void Kernel(float* hostRes, int clkRate) {
 }
 
 TEST_CASE("Unit_hipHostMalloc_CoherentAccess") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   int blocks = 2;
   float* hostRes;
   HIP_CHECK(hipHostMalloc(&hostRes, blocks * sizeof(float),

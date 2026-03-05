@@ -202,6 +202,12 @@ passByValueKernel(testPassByValue obj, bool* result_ecd) {
 }
 
 TEST_CASE("Unit_hipClassKernel_Value") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   bool *result_ecd,*result_ech;
   result_ech = AllocateHostMemory();
   result_ecd = AllocateDeviceMemory();

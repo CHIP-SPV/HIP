@@ -43,6 +43,12 @@ TEST_CASE("Unit_hipHostGetDevicePointer_Negative") {
 template <typename T> __global__ void set(T* ptr, T val) { *ptr = val; }
 
 TEST_CASE("Unit_hipHostGetDevicePointer_UseCase") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   int* hPtr{nullptr};
   HIP_CHECK(hipHostMalloc(&hPtr, sizeof(int)));
 

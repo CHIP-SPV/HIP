@@ -438,6 +438,12 @@ This testcase verifies the following scenarios
 */
 TEMPLATE_TEST_CASE("Unit_hipMemcpy_H2H-H2D-D2H-H2PinMem", "", int,
                    float, double) {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   TestType *A_d{nullptr}, *B_d{nullptr};
   TestType *A_h{nullptr}, *B_h{nullptr};
   TestType *A_Ph{nullptr}, *B_Ph{nullptr};

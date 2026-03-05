@@ -11,6 +11,12 @@ TEST_CASE("Unit_hipMemset_4bytes") {
 }
 
 TEST_CASE("Unit_hipMemset_4bytes_hostMem") {
+  hipDeviceProp_t prop;
+  HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  if (!prop.canMapHostMemory) {
+    HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+    return;
+  }
   int* d_a;
   auto res = hipHostMalloc(&d_a, sizeof(int), 0);
   REQUIRE(res == hipSuccess);
