@@ -51,4 +51,5 @@ endif()
 hip_add_exe_to_target(NAME StreamTest
                       TEST_SRC ${TEST_SRC}
                       TEST_TARGET_NAME build_tests
-                      COMPILE_OPTIONS -std=c++17)
+                      COMPILE_OPTIONS -std=c++17
+		      LINKER_LIBS -pthreads)
