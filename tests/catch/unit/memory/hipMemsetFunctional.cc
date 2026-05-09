@@ -90,6 +90,12 @@ void checkMemset(T value, size_t count, MemsetType memsetType, bool async = fals
   if (mallocType == hipDeviceMalloc_t) {
     HIP_CHECK(hipMalloc(&devPtr, count * sizeof(T)));
   } else if (mallocType == hipHostMalloc_t) {
+    hipDeviceProp_t prop;
+    HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+    if (!prop.canMapHostMemory) {
+      HipTest::HIP_SKIP_TEST("Test requires canMapHostMemory support");
+      return;
+    }
     HIP_CHECK(hipHostMalloc(&devPtr, count * sizeof(T)));
   }
 
