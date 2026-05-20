@@ -68,7 +68,13 @@ if(NOT host_flag)
     set(__CC ${HIP_HIPCC_EXECUTABLE})
     if("${HIP_PLATFORM}" STREQUAL "amd" OR "${HIP_PLATFORM}" STREQUAL "spirv")
         if("${HIP_COMPILER}" STREQUAL "clang")
-            if(NOT "x${HIP_CLANG_PATH}" STREQUAL "x")
+            # Only export HIP_CLANG_PATH when it actually points at an LLVM
+            # bin dir. FindHIP.cmake's fallback chain may set it to a guessed
+            # "${HIP_PATH}/../llvm/bin" that does not exist for chipStar installs
+            # where LLVM lives elsewhere; hipcc.bin (HIPCC) would then abort
+            # with "HIP_CLANG_PATH was set in the environment ... but
+            # llvm-config was not found" (issue #1212).
+            if(NOT "x${HIP_CLANG_PATH}" STREQUAL "x" AND EXISTS "${HIP_CLANG_PATH}/llvm-config")
                 set(ENV{HIP_CLANG_PATH} ${HIP_CLANG_PATH})
             endif()
             set(__CC_FLAGS ${HIP_CLANG_PARALLEL_BUILD_COMPILE_OPTIONS} ${HIP_HIPCC_FLAGS} ${HIP_CLANG_FLAGS} ${HIP_HIPCC_FLAGS_${build_configuration}} ${HIP_CLANG_FLAGS_${build_configuration}})
