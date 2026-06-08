@@ -1106,8 +1106,6 @@ typedef struct hipBatchMemOpNodeParams {
 // Stream per thread
 /** Implicit stream per application thread.*/
 #define hipStreamPerThread ((hipStream_t)2)
-#define hipStreamLegacy ((hipStream_t)3)
-
 #define hipStreamLegacy ((hipStream_t)1)
 
 // Indicates that the external memory object is a dedicated resource
