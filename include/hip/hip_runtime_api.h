@@ -278,7 +278,12 @@ typedef enum hipMemoryType {
  * Pointer attributes
  */
 typedef struct hipPointerAttribute_t {
-  enum hipMemoryType type;
+  union {
+    // Deprecated, use 'type' instead. Kept for compatibility with older
+    // HIP / ROCm code (matches AMD's pre-SWDEV-399623 layout).
+    enum hipMemoryType memoryType;
+    enum hipMemoryType type;
+  };
   int device;
   void* devicePointer;
   void* hostPointer;
